@@ -1,8 +1,13 @@
 import { supabase } from './supabase-client.js';
 import { initializeTheme } from './theme.js';
 import { protectPage, handleLogout } from './auth.js';
+
+// --- DOM ELEMENTS ---
+// Live Info
 const dateTimeElement = document.getElementById('datetime-display');
 const weatherElement = document.getElementById('weather-display');
+
+// Announcements
 const announcementsList = document.getElementById('announcements-list');
 const announcementForm = document.getElementById('announcement-form');
 const announcementIdInput = document.getElementById('announcement-id');
@@ -10,6 +15,8 @@ const announcementTitleInput = document.getElementById('announcement-title');
 const announcementContentInput = document.getElementById('announcement-content');
 const formSubmitButton = document.getElementById('form-submit-button');
 const formCancelButton = document.getElementById('form-cancel-button');
+
+// Core Data
 const slotForm = document.getElementById('slot-form');
 const slotsList = document.getElementById('slots-list');
 const teacherForm = document.getElementById('teacher-form');
@@ -18,6 +25,8 @@ const subjectForm = document.getElementById('subject-form');
 const subjectsList = document.getElementById('subjects-list');
 const batchForm = document.getElementById('batch-form');
 const batchesList = document.getElementById('batches-list');
+
+// Schedule Manager
 const scheduleForm = document.getElementById('schedule-form');
 const scheduleBatchSelect = document.getElementById('schedule-batch');
 const scheduleDaySelect = document.getElementById('schedule-day');
@@ -26,6 +35,9 @@ const scheduleSubjectSelect = document.getElementById('schedule-subject');
 const scheduleTeacherSelect = document.getElementById('schedule-teacher');
 const batchSelect = document.getElementById('batch-select');
 const scheduleGrid = document.getElementById('schedule-grid');
+
+
+// --- GENERIC CRUD FUNCTIONS for Core Data ---
 
 // Generic Fetch Items
 async function fetchItems(tableName, listElement, renderFunc, orderBy = 'id') {
@@ -45,7 +57,7 @@ async function fetchItems(tableName, listElement, renderFunc, orderBy = 'id') {
     return data;
 }
 
-// Generic Delete Item
+
 window.deleteItem = async (tableName, id, fetchFunc) => {
     if (confirm(`Are you sure you want to delete this item?`)) {
         const { error } = await supabase.from(tableName).delete().eq('id', id);
@@ -57,7 +69,6 @@ window.deleteItem = async (tableName, id, fetchFunc) => {
     }
 };
 
-// --- Specific Implementations for Core Data ---
 
 // TIME SLOTS
 const renderSlot = slot => {
@@ -216,7 +227,8 @@ scheduleForm.addEventListener('submit', async e => {
     }
 });
 
-// Handle deleting a class from the schedule
+// ** THE FIX IS HERE **
+// Handle deleting a class from the schedule - Now attached to the global window object
 window.deleteScheduleItem = async (id) => {
     if (confirm('Are you sure you want to remove this class from the schedule?')) {
         const { error } = await supabase.from('schedules').delete().eq('id', id);
@@ -330,19 +342,24 @@ async function fetchWeather() {
     }
 }
 
-
+// This runs when the page is fully loaded
 document.addEventListener('DOMContentLoaded', () => {
+    // Initialize core functionalities
     protectPage();
     handleLogout();
     initializeTheme();
     updateDateTime();
     fetchWeather();
+    
+    // Fetch initial data for the dashboard sections
     fetchAnnouncements();
     fetchSlots();
     fetchTeachers();
     fetchSubjects();
     fetchBatches();
     populateScheduleFormSelects();
+    
+    // Set intervals for live updates
     setInterval(updateDateTime, 1000);
     setInterval(fetchWeather, 900000);
 });
