@@ -1,0 +1,317 @@
+/* --- Base Reset & Typography --- */
+* { margin: 0; padding: 0; box-sizing: border-box; }
+html { height: 100%; }
+body {
+    font-family: 'Poppins', sans-serif;
+    display: flex;
+    flex-direction: column;
+    min-height: 100%;
+    transition: background-color 0.5s ease, color 0.5s ease;
+    position: relative;
+    overflow-x: hidden;
+}
+
+body::before {
+    content: '';
+    position: fixed;
+    z-index: -1;
+    pointer-events: none;
+    transition: opacity 1s ease-in-out, transform 1s ease-in-out;
+    opacity: 0;
+}
+
+/* --- Theme Styles --- */
+body.day-theme { background: #f4f7f9; color: #2c3e50; }
+body.day-theme::before {
+    width: 300px;
+    height: 300px;
+    top: -100px;
+    left: -100px;
+    background: radial-gradient(circle, rgb(255, 196, 0) 0%, rgba(255, 223, 100, 0) 70%);
+    opacity: 1;
+    animation: pulse 10s infinite ease-in-out;
+}
+
+body.night-theme { background-color: #0d1117; color: #c9d1d9; }
+body.night-theme::before {
+    width: 200px;
+    height: 200px;
+    top: 50px;
+    right: -50px;
+    border-radius: 50%;
+    background-color: #F7D794;
+    /* Craters created with multiple radial gradients */
+    background-image: 
+        radial-gradient(circle at 20% 30%, rgba(0, 0, 0, 0.15) 0%, rgba(0,0,0,0) 30%),
+        radial-gradient(circle at 80% 60%, rgba(0,0,0,0.1) 0%, rgba(0,0,0,0) 20%),
+        radial-gradient(circle at 50% 80%, rgba(0,0,0,0.12) 0%, rgba(0,0,0,0) 25%);
+    box-shadow: 0 0 80px 20px rgba(247, 215, 148, 0.3);
+    opacity: 1;
+    transform: rotate(-15deg);
+}
+
+/* --- Main Layout --- */
+.wrapper { flex: 1 0 auto; padding-bottom: 60px; /* Footer height */ z-index: 1; }
+.wrapper.center { display: flex; align-items: center; justify-content: center; padding: 20px; }
+
+/* --- Header --- */
+.header { background: rgba(255, 255, 255, 0.1); backdrop-filter: blur(10px); padding: 1rem 5%; border-bottom: 1px solid rgba(255, 255, 255, 0.1); }
+body.day-theme .header { background: rgba(255, 255, 255, 0.7); border-bottom: 1px solid #e0e0e0; box-shadow: 0 2px 5px rgba(0,0,0,0.05); }
+.header-top { display: flex; justify-content: space-between; align-items: center; }
+.header-top h1 { font-size: 1.5rem; font-weight: 700; }
+.header-controls { display: flex; align-items: center; gap: 20px; }
+#theme-toggle { font-size: 1.5rem; cursor: pointer; }
+#logout-button { background-color: #e74c3c; color: white; padding: 8px 15px; border: none; border-radius: 5px; cursor: pointer; font-family: 'Poppins', sans-serif; transition: background-color 0.3s ease; }
+#logout-button:hover { background-color: #c0392b; }
+
+/* --- Live Info Display --- */
+.live-info { font-size: 0.85rem; text-align: center; padding: 0.5rem 0; background: rgba(0,0,0,0.1); }
+body.day-theme .live-info { background: #e9ecef; }
+#weather-display { margin-left: 15px; }
+
+/* --- Login, Dashboard & Form Cards --- */
+.card { padding: 2.5rem 2rem; background: rgba(255, 255, 255, 0.05); border-radius: 10px; border: 1px solid rgba(255, 255, 255, 0.1); text-align: center; width: 100%; }
+body.day-theme .card { background: white; box-shadow: 0 8px 30px rgba(0,0,0,0.05); border: 1px solid #fff; }
+.card h2, .card h3 { margin-bottom: 1.5rem; font-weight: 700; }
+
+/* --- UNIFIED FORM STYLES --- */
+.card label {
+    display: block;
+    text-align: left;
+    margin-bottom: 0.5rem;
+    font-weight: 500;
+}
+.card input[type="text"],
+.card input[type="email"],
+.card input[type="password"],
+.card input[type="number"],
+.card input[type="time"],
+.card select,
+.card textarea {
+    width: 100%;
+    padding: 12px 15px;
+    margin-bottom: 1rem;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    font-family: 'Poppins', sans-serif;
+    font-size: 1rem;
+    transition: border-color 0.3s ease, background-color 0.3s ease;
+}
+.card select {
+    appearance: none;
+    background-position: right 15px center;
+    background-repeat: no-repeat;
+    background-size: 12px;
+    background-image: url('data:image/svg+xml;charset=US-ASCII,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22292.4%22%20height%3D%22292.4%22%3E%3Cpath%20fill%3D%22%236c757d%22%20d%3D%22M287%2069.4a17.6%2017.6%200%200%200-13-5.4H18.4c-5%200-9.3%201.8-12.9%205.4A17.6%2017.6%200%200%200%200%2082.2c0%205%201.8%209.3%205.4%2012.9l128%20127.9c3.6%203.6%207.8%205.4%2012.8%205.4s9.2-1.8%2012.8-5.4L287%2095c3.5-3.5%205.4-7.8%205.4-12.8%200-5-1.9-9.2-5.5-12.8z%22%2F%3E%3C%2Fsvg%3E');
+}
+body.night-theme .card select {
+    background-image: url('data:image/svg+xml;charset=US-ASCII,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22292.4%22%20height%3D%22292.4%22%3E%3Cpath%20fill%3D%22%23c9d1d9%22%20d%3D%22M287%2069.4a17.6%2017.6%200%200%200-13-5.4H18.4c-5%200-9.3%201.8-12.9%205.4A17.6%2017.6%200%200%200%200%2082.2c0%205%201.8%209.3%205.4%2012.9l128%20127.9c3.6%203.6%207.8%205.4%2012.8%205.4s9.2-1.8%2012.8-5.4L287%2095c3.5-3.5%205.4-7.8%205.4-12.8%200-5-1.9-9.2-5.5-12.8z%22%2F%3E%3C%2Fsvg%3E');
+}
+.card textarea {
+    resize: none; 
+    height: 200px;
+}
+/* Day theme inputs */
+body.day-theme .card input[type="text"],
+body.day-theme .card input[type="email"],
+body.day-theme .card input[type="password"],
+body.day-theme .card input[type="number"],
+body.day-theme .card input[type="time"],
+body.day-theme .card select,
+body.day-theme .card textarea {
+    background-color: #f8f9fa;
+    border-color: #dee2e6;
+    color: #495057;
+}
+body.day-theme .card input:focus,
+body.day-theme .card select:focus,
+body.day-theme .card textarea:focus {
+    background-color: #fff;
+    border-color: #80bdff;
+    outline: none;
+}
+/* Night theme inputs */
+body.night-theme .card input[type="text"],
+body.night-theme .card input[type="email"],
+body.night-theme .card input[type="password"],
+body.night-theme .card input[type="number"],
+body.night-theme .card input[type="time"],
+body.night-theme .card select,
+body.night-theme .card textarea {
+    background: #21262d;
+    border-color: #30363d;
+    color: #c9d1d9;
+}
+body.night-theme .card input:focus,
+body.night-theme .card select:focus,
+body.night-theme .card textarea:focus {
+    background-color: #0d1117;
+    border-color: #007bff;
+    outline: none;
+}
+.card button { width: 100%; padding: 12px 15px; border: none; background-color: #3498db; color: white; border-radius: 5px; cursor: pointer; font-family: 'Poppins', sans-serif; font-size: 1rem; font-weight: 500; transition: background-color 0.3s ease; }
+.card button:hover { background-color: #2980b9; }
+.card button.cancel-button {
+    background-color: #6c757d;
+    margin-top: 0.5rem;
+}
+.card button.cancel-button:hover {
+    background-color: #5a6268;
+}
+
+.dashboard-container { width: 95%; max-width: 1200px; margin: 2rem auto; }
+
+/* --- Core Data Management Specific Styles --- */
+.grid-container {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 1.5rem;
+    margin-top: 1rem;
+}
+.item-list {
+    margin-top: 1.5rem;
+    text-align: left;
+}
+.item-list ul { list-style-type: none; padding: 0; }
+.item-list li {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0.75rem;
+    border-radius: 5px;
+    margin-bottom: 0.5rem;
+    background-color: rgba(0,0,0,0.05);
+}
+body.day-theme .item-list li { background-color: #f8f9fa; }
+.item-list li .delete-btn { background: none; border: none; color: #e74c3c; cursor: pointer; font-size: 1.1rem; }
+
+/* --- Schedule Manager Styles --- */
+.schedule-manager-container {
+    margin-top: 2rem;
+}
+.batch-select-style {
+    width: 100%;
+    max-width: 400px;
+    padding: 12px 15px;
+    margin-bottom: 1.5rem;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    font-family: 'Poppins', sans-serif;
+    font-size: 1rem;
+    appearance: none;
+    background-position: right 15px center;
+    background-repeat: no-repeat;
+    background-size: 12px;
+    background-image: url('data:image/svg+xml;charset=US-ASCII,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22292.4%22%20height%3D%22292.4%22%3E%3Cpath%20fill%3D%22%236c757d%22%20d%3D%22M287%2069.4a17.6%2017.6%200%200%200-13-5.4H18.4c-5%200-9.3%201.8-12.9%205.4A17.6%2017.6%200%200%200%200%2082.2c0%205%201.8%209.3%205.4%2012.9l128%20127.9c3.6%203.6%207.8%205.4%2012.8%205.4s9.2-1.8%2012.8-5.4L287%2095c3.5-3.5%205.4-7.8%205.4-12.8%200-5-1.9-9.2-5.5-12.8z%22%2F%3E%3C%2Fsvg%3E');
+}
+body.night-theme .batch-select-style {
+    background-image: url('data:image/svg+xml;charset=US-ASCII,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22292.4%22%20height%3D%22292.4%22%3E%3Cpath%20fill%3D%22%23c9d1d9%22%20d%3D%22M287%2069.4a17.6%2017.6%200%200%200-13-5.4H18.4c-5%200-9.3%201.8-12.9%205.4A17.6%2017.6%200%200%200%200%2082.2c0%205%201.8%209.3%205.4%2012.9l128%20127.9c3.6%203.6%207.8%205.4%2012.8%205.4s9.2-1.8%2012.8-5.4L287%2095c3.5-3.5%205.4-7.8%205.4-12.8%200-5-1.9-9.2-5.5-12.8z%22%2F%3E%3C%2Fsvg%3E');
+}
+body.day-theme .batch-select-style {
+    background-color: #f8f9fa;
+    border-color: #dee2e6;
+    color: #495057;
+}
+body.night-theme .batch-select-style {
+    background: #21262d;
+    border-color: #30363d;
+    color: #c9d1d9;
+}
+.schedule-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 1rem;
+    margin-top: 1rem;
+}
+.day-column {
+    background-color: rgba(0,0,0,0.05);
+    border-radius: 8px;
+    padding: 1rem;
+}
+body.day-theme .day-column {
+    background-color: #f8f9fa;
+    border: 1px solid #e9ecef;
+}
+.day-column h4 {
+    margin-bottom: 1rem;
+    text-align: center;
+    border-bottom: 2px solid rgba(128,128,128,0.1);
+    padding-bottom: 0.5rem;
+}
+.class-card {
+    background-color: rgba(255,255,255,0.7);
+    border-radius: 5px;
+    padding: 0.75rem;
+    margin-bottom: 0.75rem;
+    position: relative;
+    font-size: 0.9rem;
+}
+body.night-theme .class-card {
+    background-color: #161b22;
+}
+.class-card strong {
+    display: block;
+    margin-bottom: 0.25rem;
+    color: #3498db;
+}
+.class-card .delete-class-btn {
+    position: absolute;
+    top: 5px;
+    right: 5px;
+    background: none;
+    border: none;
+    color: #e74c3c;
+    cursor: pointer;
+    font-size: 1.2rem;
+    opacity: 0.5;
+    transition: opacity 0.3s ease;
+}
+.class-card:hover .delete-class-btn {
+    opacity: 1;
+}
+
+/* --- Footer --- */
+.footer { flex-shrink: 0; text-align: center; padding: 1rem; font-size: 0.9rem; width: 100%; }
+body.day-theme .footer { background-color: #e9ecef; color: #555; }
+body.night-theme .footer { background-color: #161b22; color: #8b949e; }
+.footer a { color: #3498db; text-decoration: none; margin: 0 10px; font-size: 1.2rem; }
+.footer a:hover { color: #5dade2; }
+.footer .heart {
+    color: #e74c3c;
+    display: inline-block;
+    animation: heartbeat 1.5s ease-in-out infinite;
+}
+
+/* --- Night Theme Decorations --- */
+.shooting-star { display: none; }
+body.night-theme .shooting-star { display: block; position: fixed; width: 2px; height: 2px; background: white; box-shadow: 0 0 8px white; pointer-events: none; opacity: 0; z-index: 0; animation: shooting 3s linear infinite; }
+.shooting-star.star1 { top: 20%; left: 70%; animation-delay: 1s; }
+.shooting-star.star2 { top: 40%; left: 85%; animation-delay: 2.5s; }
+@keyframes shooting { 0% { opacity: 0; transform: translate(0, 0); } 10% { opacity: 1; } 50% { opacity: 1; transform: translate(-100px, 100px); } 100% { opacity: 0; } }
+
+/* --- Responsive Fixes --- */
+@media (max-width: 600px) {
+    .card {
+        padding: 1.5rem 1rem; 
+    }
+    .header-top h1 {
+        font-size: 1.2rem;
+    }
+    .header-controls {
+        gap: 10px;
+    }
+}
+
+/* --- Heartbeat Animation --- */
+@keyframes heartbeat {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.3); }
+    100% { transform: scale(1); }
+}
+
+/* --- NEW: Sun Pulse Animation --- */
+@keyframes pulse {
+    0% { transform: scale(1); opacity: 0.8; }
+    50% { transform: scale(1.1); opacity: 1; }
+    100% { transform: scale(1); opacity: 0.8; }
+}

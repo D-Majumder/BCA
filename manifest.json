@@ -1,0 +1,22 @@
+{
+  "name": "BCA Smart Time Table",
+  "short_name": "Smart TT",
+  "description": "A dynamic, real-time class schedule for the BCA department.",
+  "start_url": "/index.html",
+  "display": "standalone",
+  "background_color": "#0d1117",
+  "theme_color": "#2c3e50",
+  "orientation": "portrait-primary",
+  "icons": [
+    {
+      "src": "https://placehold.co/192x192/3498db/ffffff?text=BCA",
+      "type": "image/png",
+      "sizes": "192x192"
+    },
+    {
+      "src": "https://placehold.co/512x512/3498db/ffffff?text=BCA",
+      "type": "image/png",
+      "sizes": "512x512"
+    }
+  ]
+}
