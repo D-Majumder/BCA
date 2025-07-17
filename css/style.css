@@ -70,7 +70,7 @@ body.day-theme .live-info { background: #e9ecef; }
 #weather-display { margin-left: 15px; }
 
 /* --- Login, Dashboard & Form Cards --- */
-.card { padding: 2.5rem 2rem; background: rgba(255, 255, 255, 0.05); border-radius: 10px; border: 1px solid rgba(255, 255, 255, 0.1); text-align: center; width: 100%; }
+.card { padding: 2.5rem 2rem; background: rgba(255, 255, 255, 0.05); border-radius: 10px; border: 1px solid rgba(255, 255, 255, 0.1); text-align: center; width: 100%; display: flex; flex-direction: column; }
 body.day-theme .card { background: white; box-shadow: 0 8px 30px rgba(0,0,0,0.05); border: 1px solid #fff; }
 .card h2, .card h3 { margin-bottom: 1.5rem; font-weight: 700; }
 
@@ -142,7 +142,7 @@ body.night-theme .card textarea:focus {
     border-color: #007bff;
     outline: none;
 }
-.card button { width: 100%; padding: 12px 15px; border: none; background-color: #3498db; color: white; border-radius: 5px; cursor: pointer; font-family: 'Poppins', sans-serif; font-size: 1rem; font-weight: 500; transition: background-color 0.3s ease; }
+.card button { width: 100%; padding: 12px 15px; border: none; background-color: #3498db; color: white; border-radius: 5px; cursor: pointer; font-family: 'Poppins', sans-serif; font-size: 1rem; font-weight: 500; transition: background-color 0.3s ease; margin-top: auto; }
 .card button:hover { background-color: #2980b9; }
 .card button.cancel-button {
     background-color: #6c757d;
@@ -161,9 +161,13 @@ body.night-theme .card textarea:focus {
     gap: 1.5rem;
     margin-top: 1rem;
 }
+/* UPDATED: Item List Styles */
 .item-list {
     margin-top: 1.5rem;
     text-align: left;
+    max-height: 250px; /* Set a max height */
+    overflow-y: auto; /* Add scroll on overflow */
+    padding-right: 10px; /* Space for scrollbar */
 }
 .item-list ul { list-style-type: none; padding: 0; }
 .item-list li {
@@ -177,6 +181,29 @@ body.night-theme .card textarea:focus {
 }
 body.day-theme .item-list li { background-color: #f8f9fa; }
 .item-list li .delete-btn { background: none; border: none; color: #e74c3c; cursor: pointer; font-size: 1.1rem; }
+
+/* NEW: Custom Scrollbar Styling */
+.item-list::-webkit-scrollbar {
+    width: 8px;
+}
+.item-list::-webkit-scrollbar-track {
+    background: rgba(0,0,0,0.05);
+    border-radius: 10px;
+}
+.item-list::-webkit-scrollbar-thumb {
+    background: #888;
+    border-radius: 10px;
+}
+.item-list::-webkit-scrollbar-thumb:hover {
+    background: #555;
+}
+body.night-theme .item-list::-webkit-scrollbar-thumb {
+    background: #555;
+}
+body.night-theme .item-list::-webkit-scrollbar-thumb:hover {
+    background: #888;
+}
+
 
 /* --- Schedule Manager Styles --- */
 .schedule-manager-container {
