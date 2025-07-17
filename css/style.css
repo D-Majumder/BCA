@@ -1,4 +1,4 @@
-/* --- Base & Typography --- */
+/* --- Base Reset & Typography --- */
 * { margin: 0; padding: 0; box-sizing: border-box; }
 html { height: 100%; }
 body {
@@ -97,7 +97,7 @@ body.day-theme .card { background: white; box-shadow: 0 8px 30px rgba(0,0,0,0.05
     font-family: 'Poppins', sans-serif;
     font-size: 1rem;
     transition: border-color 0.3s ease, background-color 0.3s ease;
-    min-height: 48px; /* Fix for thin inputs on iOS */
+    min-height: 48px;
 }
 .card select {
     appearance: none;
