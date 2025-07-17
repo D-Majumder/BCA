@@ -15,13 +15,12 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
-    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/style.css?v=1.1">
 </head>
 <body>
     <div class="wrapper">
         <div class="shooting-star star1"></div>
         <div class="shooting-star star2"></div>
-
         <header class="header">
             <div class="header-top">
                 <h1>Admin Dashboard</h1>
@@ -35,17 +34,12 @@
                 <span id="weather-display"></span>
             </div>
         </header>
-
         <main class="dashboard-container">
             <p style="margin-bottom: 2rem;">Welcome, <b id="user-email">loading...</b>!</p>
-            
             <hr style="margin: 2rem 0; border: none; border-top: 1px solid rgba(128,128,128,0.1);">
-
-            <!-- Core Data Management Section -->
             <div class="management-section">
                 <h2>📚 Core Data Management</h2>
                 <div class="grid-container">
-                    <!-- Manage Time Slots -->
                     <div class="card">
                         <h3>Time Slots</h3>
                         <form id="slot-form">
@@ -58,18 +52,14 @@
                         </form>
                         <div class="item-list" id="slots-list"><p>Loading...</p></div>
                     </div>
-
-                    <!-- Manage Teachers -->
                     <div class="card">
                         <h3>Teachers</h3>
                         <form id="teacher-form">
-                            <input type="text" id="teacher-name" placeholder="e.g., Prof. D. Majumder" required>
+                            <input type="text" id="teacher-name" placeholder="e.g., Prof. D. Smith" required>
                             <button type="submit">Add Teacher</button>
                         </form>
                         <div class="item-list" id="teachers-list"><p>Loading...</p></div>
                     </div>
-
-                    <!-- Manage Subjects -->
                     <div class="card">
                         <h3>Subjects</h3>
                         <form id="subject-form">
@@ -79,8 +69,6 @@
                         </form>
                         <div class="item-list" id="subjects-list"><p>Loading...</p></div>
                     </div>
-
-                    <!-- Manage Batches -->
                     <div class="card">
                         <h3>Batches</h3>
                         <form id="batch-form">
@@ -92,10 +80,7 @@
                     </div>
                 </div>
             </div>
-            
             <hr style="margin: 2rem 0; border: none; border-top: 1px solid rgba(128,128,128,0.1);">
-
-            <!-- Announcement Management Section -->
             <div class="management-section">
                 <h2>📢 Manage Announcements</h2>
                 <form id="announcement-form" class="card" style="text-align: left; max-width: none; margin-top: 1rem;">
@@ -108,18 +93,11 @@
                     <button type="button" id="form-cancel-button" class="cancel-button" style="display:none;">Cancel Edit</button>
                 </form>
                 <h3 style="margin-top: 2rem;">Existing Announcements</h3>
-                <div id="announcements-list" style="margin-top: 1rem;">
-                    <p>Loading announcements...</p>
-                </div>
+                <div id="announcements-list" style="margin-top: 1rem;"><p>Loading announcements...</p></div>
             </div>
-
             <hr style="margin: 2rem 0; border: none; border-top: 1px solid rgba(128,128,128,0.1);">
-
-            <!-- Main Schedule Manager Section -->
             <div class="management-section">
                 <h2>🗓️ Main Schedule Manager</h2>
-                
-                <!-- Form to Add a New Class -->
                 <div class="card" style="margin-top: 1rem;">
                     <h3>Add Class to Schedule</h3>
                     <form id="schedule-form">
@@ -155,24 +133,19 @@
                         <button type="submit" style="margin-top: 1.5rem;">Add to Schedule</button>
                     </form>
                 </div>
-
-                <!-- Display Schedule for Selected Batch -->
                 <div class="schedule-manager-container">
                     <h3>View Schedule For:</h3>
                     <select id="batch-select" class="batch-select-style"></select>
-                    <div id="schedule-grid" class="schedule-grid">
-                        <p>Select a batch to view its schedule.</p>
-                    </div>
+                    <div id="schedule-grid" class="schedule-grid"><p>Select a batch to view its schedule.</p></div>
                 </div>
             </div>
         </main>
     </div>
-
     <footer class="footer">
         Made with <span class="heart">❤️</span> by Dhruba
         <a href="https://www.linkedin.com/in/iamdhrubamajumder/" target="_blank" title="LinkedIn"><i class="fab fa-linkedin"></i></a>
         <a href="https://github.com/D-Majumder" target="_blank" title="GitHub"><i class="fab fa-github"></i></a>
     </footer>
-    <script type="module" src="js/main-dashboard.js"></script>
+    <script type="module" src="js/main-dashboard.js?v=1.1"></script>
 </body>
 </html>

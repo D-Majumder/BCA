@@ -14,19 +14,18 @@
     <meta property="og:title" content="BCA Smart Time Table">
     <meta property="og:description" content="The official real-time schedule for the BCA department.">
     <meta property="og:image" content="https://placehold.co/1200x630/2c3e50/ffffff?text=BCA+Smart+Time+Table">
-    <meta property="og:url" content="YOUR_FINAL_WEBSITE_URL_HERE"> <!-- We will replace this later -->
+    <meta property="og:url" content="https://bca-umber.vercel.app"> <!-- Updated with your URL -->
     <meta property="og:type" content="website">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
-    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/style.css?v=1.1">
 </head>
 <body>
     <div class="wrapper">
         <div class="shooting-star star1"></div>
         <div class="shooting-star star2"></div>
-
         <header class="header">
             <div class="header-top">
                 <h1>Smart Time Table</h1>
@@ -39,9 +38,7 @@
                 <span id="weather-display"></span>
             </div>
         </header>
-
         <main class="dashboard-container">
-            <!-- Batch Selection -->
             <div class="card" style="margin-bottom: 2rem; text-align: left;">
                 <h2>Select Your Batch</h2>
                 <div class="grid-container" style="grid-template-columns: 1fr 1fr; align-items: end;">
@@ -51,46 +48,38 @@
                     </div>
                     <div>
                         <label for="batch-select">Batch</label>
-                        <select id="batch-select" class="batch-select-style"></select>
+                        <select id="batch-select" class="batch-select-style" disabled></select>
                     </div>
                 </div>
             </div>
 
-            <!-- Smart Info Section -->
             <div class="grid-container" style="grid-template-columns: 1fr 1fr; margin-bottom: 2rem;">
                 <div class="card">
                     <h3>Right Now</h3>
-                    <div id="current-class-info"><p>Select your batch to see details.</p></div>
+                    <div id="current-class-info"><p>Loading...</p></div>
                 </div>
                 <div class="card">
                     <h3>Up Next</h3>
-                    <div id="upcoming-class-info"><p>Select your batch to see details.</p></div>
+                    <div id="upcoming-class-info"><p>Loading...</p></div>
                 </div>
             </div>
-
-            <!-- Announcements Section -->
+            <hr style="margin: 2rem 0; border: none; border-top: 1px solid rgba(128,128,128,0.1);">
             <div class="management-section" style="margin-bottom: 2rem;">
                 <h2>📢 Announcements</h2>
-                <div id="announcements-display" style="margin-top: 1rem;">
-                    <p>Loading announcements...</p>
-                </div>
+                <div id="announcements-display" style="margin-top: 1rem;"><p>Loading announcements...</p></div>
             </div>
-
-            <!-- Full Schedule Section -->
+            <hr style="margin: 2rem 0; border: none; border-top: 1px solid rgba(128,128,128,0.1);">
             <div class="management-section">
                 <h2>🗓️ Full Schedule</h2>
-                <div id="full-schedule-display" class="schedule-grid" style="margin-top: 1rem;">
-                    <p>Select your batch to view the full schedule.</p>
-                </div>
+                <div id="full-schedule-display" class="schedule-grid" style="margin-top: 1rem;"><p>Loading schedule...</p></div>
             </div>
         </main>
     </div>
-
     <footer class="footer">
         Made with <span class="heart">❤️</span> by Dhruba
         <a href="https://www.linkedin.com/in/iamdhrubamajumder/" target="_blank" title="LinkedIn"><i class="fab fa-linkedin"></i></a>
         <a href="https://github.com/D-Majumder" target="_blank" title="GitHub"><i class="fab fa-github"></i></a>
     </footer>
-    <script type="module" src="js/main-student.js"></script>
+    <script type="module" src="js/main-student.js?v=1.1"></script>
 </body>
 </html>
