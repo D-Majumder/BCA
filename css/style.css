@@ -11,6 +11,7 @@ body {
     overflow-x: hidden;
 }
 
+/* --- Celestial Body Base Style --- */
 body::before {
     content: '';
     position: fixed;
@@ -27,7 +28,7 @@ body.day-theme::before {
     height: 300px;
     top: -100px;
     left: -100px;
-    background: radial-gradient(circle, rgb(255, 196, 0) 0%, rgba(255, 223, 100, 0) 70%);
+    background: radial-gradient(circle, rgba(255, 223, 100, 0.8) 0%, rgba(255, 223, 100, 0) 70%);
     opacity: 1;
     animation: pulse 10s infinite ease-in-out;
 }
@@ -40,9 +41,8 @@ body.night-theme::before {
     right: -50px;
     border-radius: 50%;
     background-color: #F7D794;
-    /* Craters created with multiple radial gradients */
     background-image: 
-        radial-gradient(circle at 20% 30%, rgba(0, 0, 0, 0.15) 0%, rgba(0,0,0,0) 30%),
+        radial-gradient(circle at 20% 30%, rgba(0,0,0,0.15) 0%, rgba(0,0,0,0) 30%),
         radial-gradient(circle at 80% 60%, rgba(0,0,0,0.1) 0%, rgba(0,0,0,0) 20%),
         radial-gradient(circle at 50% 80%, rgba(0,0,0,0.12) 0%, rgba(0,0,0,0) 25%);
     box-shadow: 0 0 80px 20px rgba(247, 215, 148, 0.3);
@@ -51,7 +51,7 @@ body.night-theme::before {
 }
 
 /* --- Main Layout --- */
-.wrapper { flex: 1 0 auto; padding-bottom: 60px; /* Footer height */ z-index: 1; }
+.wrapper { flex: 1 0 auto; padding-bottom: 60px; z-index: 1; }
 .wrapper.center { display: flex; align-items: center; justify-content: center; padding: 20px; }
 
 /* --- Header --- */
@@ -74,46 +74,6 @@ body.day-theme .live-info { background: #e9ecef; }
 body.day-theme .card { background: white; box-shadow: 0 8px 30px rgba(0,0,0,0.05); border: 1px solid #fff; }
 .card h2, .card h3 { margin-bottom: 1.5rem; font-weight: 700; }
 
-/* --- Syllabus and Login Button --- */
-.action-buttons-container {
-    display: flex;
-    gap: 1rem;
-    justify-content: center;
-    flex-wrap: wrap;
-}
-
-.action-btn {
-    display: inline-flex;
-    align-items: center;
-    gap: 0.5rem;
-    padding: 10px 20px;
-    border-radius: 5px;
-    text-decoration: none;
-    font-weight: 500;
-    color: white;
-    transition: transform 0.2s ease, box-shadow 0.2s ease;
-}
-
-.action-btn:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 4px 10px rgba(0,0,0,0.1);
-}
-
-.student-login-btn {
-    background-color: #2980b9;
-}
-
-.syllabus-btn {
-    background-color: #27ae60;
-}
-
-.syllabus-btn.disabled {
-    background-color: #95a5a6;
-    cursor: not-allowed;
-    pointer-events: none;
-    opacity: 0.7;
-}
-
 /* --- UNIFIED FORM STYLES --- */
 .card label {
     display: block;
@@ -126,6 +86,7 @@ body.day-theme .card { background: white; box-shadow: 0 8px 30px rgba(0,0,0,0.05
 .card input[type="password"],
 .card input[type="number"],
 .card input[type="time"],
+.card input[type="url"],
 .card select,
 .card textarea {
     width: 100%;
@@ -152,11 +113,7 @@ body.night-theme .card select {
     height: 200px;
 }
 /* Day theme inputs */
-body.day-theme .card input[type="text"],
-body.day-theme .card input[type="email"],
-body.day-theme .card input[type="password"],
-body.day-theme .card input[type="number"],
-body.day-theme .card input[type="time"],
+body.day-theme .card input,
 body.day-theme .card select,
 body.day-theme .card textarea {
     background-color: #f8f9fa;
@@ -171,11 +128,7 @@ body.day-theme .card textarea:focus {
     outline: none;
 }
 /* Night theme inputs */
-body.night-theme .card input[type="text"],
-body.night-theme .card input[type="email"],
-body.night-theme .card input[type="password"],
-body.night-theme .card input[type="number"],
-body.night-theme .card input[type="time"],
+body.night-theme .card input,
 body.night-theme .card select,
 body.night-theme .card textarea {
     background: #21262d;
@@ -310,6 +263,41 @@ body.night-theme .class-card {
     opacity: 1;
 }
 
+/* --- Action Button Styles --- */
+.action-buttons-container {
+    display: flex;
+    gap: 1rem;
+    justify-content: center;
+    flex-wrap: wrap;
+}
+.action-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 10px 20px;
+    border-radius: 5px;
+    text-decoration: none;
+    font-weight: 500;
+    color: white;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+.action-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+}
+.student-login-btn {
+    background-color: #2980b9;
+}
+.syllabus-btn {
+    background-color: #27ae60;
+}
+.syllabus-btn.disabled {
+    background-color: #95a5a6;
+    cursor: not-allowed;
+    pointer-events: none;
+    opacity: 0.7;
+}
+
 /* --- Footer --- */
 .footer { flex-shrink: 0; text-align: center; padding: 1rem; font-size: 0.9rem; width: 100%; }
 body.day-theme .footer { background-color: #e9ecef; color: #555; }
@@ -349,7 +337,7 @@ body.night-theme .shooting-star { display: block; position: fixed; width: 2px; h
     100% { transform: scale(1); }
 }
 
-/* --- NEW: Sun Pulse Animation --- */
+/* --- Sun Pulse Animation --- */
 @keyframes pulse {
     0% { transform: scale(1); opacity: 0.8; }
     50% { transform: scale(1.1); opacity: 1; }
