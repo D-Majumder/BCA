@@ -20,8 +20,8 @@ const subjectForm = document.getElementById('subject-form');
 const subjectsList = document.getElementById('subjects-list');
 const batchForm = document.getElementById('batch-form');
 const batchesList = document.getElementById('batches-list');
-const syllabusForm = document.getElementById('syllabus-form'); // New
-const syllabusesList = document.getElementById('syllabuses-list'); // New
+const syllabusForm = document.getElementById('syllabus-form');
+const syllabusesList = document.getElementById('syllabuses-list');
 const scheduleForm = document.getElementById('schedule-form');
 const scheduleBatchSelect = document.getElementById('schedule-batch');
 const scheduleDaySelect = document.getElementById('schedule-day');
@@ -30,6 +30,57 @@ const scheduleSubjectSelect = document.getElementById('schedule-subject');
 const scheduleTeacherSelect = document.getElementById('schedule-teacher');
 const batchSelect = document.getElementById('batch-select');
 const scheduleGrid = document.getElementById('schedule-grid');
+const auditLogList = document.getElementById('audit-log-list'); // For new feature
+
+
+// --- NEW: AUDIT LOGGING ---
+async function logAction(action, details = '') {
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) return;
+
+    const { error } = await supabase.from('audit_logs').insert({
+        admin_email: user.email,
+        action,
+        details
+    });
+
+    if (error) {
+        console.error('Error logging action:', error);
+    }
+}
+
+async function fetchAuditLogs() {
+    const { data, error } = await supabase
+        .from('audit_logs')
+        .select('*')
+        .order('created_at', { ascending: false })
+        .limit(30);
+
+    if (error) {
+        console.error('Error fetching audit logs:', error);
+        auditLogList.innerHTML = `<p>Could not load activity.</p>`;
+        return;
+    }
+    
+    const renderLog = log => {
+        const timestamp = new Date(log.created_at).toLocaleString('en-IN', { dateStyle: 'short', timeStyle: 'short' });
+        return `
+            <li class="log-item">
+                <div class="log-header">
+                    <span class="action">${log.action}</span>
+                    <span class="email">${log.admin_email}</span>
+                </div>
+                <div class="log-details">
+                    <span>${log.details || ''}</span> - 
+                    <span class="timestamp">${timestamp}</span>
+                </div>
+            </li>
+        `;
+    };
+    
+    auditLogList.innerHTML = `<ul>${data.map(renderLog).join('')}</ul>`;
+}
+
 
 // --- DATA FETCHING & RENDERING ---
 
@@ -57,14 +108,13 @@ const renderSlot = slot => {
 const renderTeacher = teacher => `<li>${teacher.name} <button class="delete-btn" data-id="${teacher.id}" data-table="teachers">✖</button></li>`;
 const renderSubject = subject => `<li>${subject.name} (${subject.code}) <button class="delete-btn" data-id="${subject.id}" data-table="subjects">✖</button></li>`;
 const renderBatch = batch => `<li>Year ${batch.year_level} - ${batch.batch_name} <button class="delete-btn" data-id="${batch.id}" data-table="batches">✖</button></li>`;
-const renderSyllabus = syllabus => `<li>Year ${syllabus.year_level} <a href="${syllabus.syllabus_url}" target="_blank">(link)</a> <button class="delete-btn" data-id="${syllabus.id}" data-table="syllabuses">✖</button></li>`; // New
+const renderSyllabus = syllabus => `<li>Year ${syllabus.year_level} <a href="${syllabus.syllabus_url}" target="_blank">(link)</a> <button class="delete-btn" data-id="${syllabus.id}" data-table="syllabuses">✖</button></li>`;
 
-// FETCH FUNCTIONS
 const fetchSlots = () => fetchItems('time_slots', slotsList, renderSlot, 'start_time');
 const fetchTeachers = () => fetchItems('teachers', teachersList, renderTeacher, 'name');
 const fetchSubjects = () => fetchItems('subjects', subjectsList, renderSubject, 'name');
 const fetchBatches = () => fetchItems('batches', batchesList, renderBatch, 'year_level');
-const fetchSyllabuses = () => fetchItems('syllabuses', syllabusesList, renderSyllabus, 'year_level'); // New
+const fetchSyllabuses = () => fetchItems('syllabuses', syllabusesList, renderSyllabus, 'year_level');
 
 // --- EVENT DELEGATION FOR ALL CLICKS ---
 document.addEventListener('click', async function(event) {
@@ -80,12 +130,14 @@ document.addEventListener('click', async function(event) {
             if (error) {
                 alert(`Error deleting: ${error.message}`);
             } else {
+                logAction(`Deleted item from ${table}`, `ID: ${id}`);
+                fetchAuditLogs();
                 if (table === 'announcements') fetchAnnouncements();
                 if (table === 'teachers') fetchTeachers();
                 if (table === 'subjects') fetchSubjects();
                 if (table === 'batches') fetchBatches();
                 if (table === 'time_slots') fetchSlots();
-                if (table === 'syllabuses') fetchSyllabuses(); // New
+                if (table === 'syllabuses') fetchSyllabuses();
                 if (table === 'schedules') renderSchedule(batchSelect.value);
             }
         }
@@ -113,7 +165,12 @@ slotForm.addEventListener('submit', async e => {
     const end_time = document.getElementById('slot-end-time').value;
     const { error } = await supabase.from('time_slots').insert([{ period_name, start_time, end_time }]);
     if (error) { alert(error.message); } 
-    else { slotForm.reset(); fetchSlots(); }
+    else {
+        logAction('Created Time Slot', `${period_name} (${start_time} - ${end_time})`);
+        fetchAuditLogs();
+        slotForm.reset();
+        fetchSlots();
+    }
 });
 
 teacherForm.addEventListener('submit', async e => {
@@ -121,7 +178,12 @@ teacherForm.addEventListener('submit', async e => {
     const name = document.getElementById('teacher-name').value;
     const { error } = await supabase.from('teachers').insert([{ name }]);
     if (error) { alert(error.message); }
-    else { teacherForm.reset(); fetchTeachers(); }
+    else {
+        logAction('Created Teacher', name);
+        fetchAuditLogs();
+        teacherForm.reset();
+        fetchTeachers();
+    }
 });
 
 subjectForm.addEventListener('submit', async e => {
@@ -130,7 +192,12 @@ subjectForm.addEventListener('submit', async e => {
     const code = document.getElementById('subject-code').value;
     const { error } = await supabase.from('subjects').insert([{ name, code }]);
     if (error) { alert(error.message); }
-    else { subjectForm.reset(); fetchSubjects(); }
+    else {
+        logAction('Created Subject', `${name} (${code})`);
+        fetchAuditLogs();
+        subjectForm.reset();
+        fetchSubjects();
+    }
 });
 
 batchForm.addEventListener('submit', async e => {
@@ -139,16 +206,26 @@ batchForm.addEventListener('submit', async e => {
     const batch_name = document.getElementById('batch-name').value;
     const { error } = await supabase.from('batches').insert([{ year_level, batch_name }]);
     if (error) { alert(error.message); }
-    else { batchForm.reset(); fetchBatches(); }
+    else {
+        logAction('Created Batch', `Year ${year_level} - ${batch_name}`);
+        fetchAuditLogs();
+        batchForm.reset();
+        fetchBatches();
+    }
 });
 
-syllabusForm.addEventListener('submit', async e => { // New
+syllabusForm.addEventListener('submit', async e => {
     e.preventDefault();
     const year_level = document.getElementById('syllabus-year').value;
     const syllabus_url = document.getElementById('syllabus-url').value;
     const { error } = await supabase.from('syllabuses').insert([{ year_level, syllabus_url }]);
     if (error) { alert("Error adding syllabus. Note: Each year can only have one syllabus link. " + error.message); }
-    else { syllabusForm.reset(); fetchSyllabuses(); }
+    else {
+        logAction('Added Syllabus', `Year ${year_level}`);
+        fetchAuditLogs();
+        syllabusForm.reset();
+        fetchSyllabuses();
+    }
 });
 
 announcementForm.addEventListener('submit', async (event) => {
@@ -159,12 +236,15 @@ announcementForm.addEventListener('submit', async (event) => {
     let error;
     if (id) {
         ({ error } = await supabase.from('announcements').update({ title, content }).eq('id', id));
+        if (!error) logAction('Updated Announcement', title);
     } else {
         ({ error } = await supabase.from('announcements').insert([{ title, content }]));
+        if (!error) logAction('Created Announcement', title);
     }
     if (error) {
         alert('Error: ' + error.message);
     } else {
+        fetchAuditLogs();
         resetForm();
         fetchAnnouncements();
     }
@@ -191,6 +271,8 @@ scheduleForm.addEventListener('submit', async e => {
     if (error) {
         alert("Error adding class: " + error.message);
     } else {
+        logAction('Added Class to Schedule', `Batch ID: ${newScheduleItem.batch_id}`);
+        fetchAuditLogs();
         alert("Class added successfully!");
         renderSchedule(batchSelect.value);
     }
@@ -268,6 +350,7 @@ async function populateScheduleFormSelects() {
     scheduleTeacherSelect.innerHTML = `<option value="">-- None --</option>` + teachers.map(t => `<option value="${t.id}">${t.name}</option>`).join('');
 }
 
+
 // --- LIVE INFO & INITIALIZATION ---
 function updateDateTime() {
     const now = new Date();
@@ -292,20 +375,24 @@ async function fetchWeather() {
 }
 
 document.addEventListener('DOMContentLoaded', () => {
+    // Initialize core functionalities
     protectPage();
     handleLogout();
     initializeTheme();
     updateDateTime();
     fetchWeather();
     
+    // Fetch initial data for all dashboard sections
     fetchAnnouncements();
     fetchSlots();
     fetchTeachers();
     fetchSubjects();
     fetchBatches();
-    fetchSyllabuses(); // New
+    fetchSyllabuses();
     populateScheduleFormSelects();
+    fetchAuditLogs(); // New
     
+    // Set intervals for live updates
     setInterval(updateDateTime, 1000);
     setInterval(fetchWeather, 900000);
 });
