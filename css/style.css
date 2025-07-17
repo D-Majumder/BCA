@@ -97,7 +97,7 @@ body.day-theme .card { background: white; box-shadow: 0 8px 30px rgba(0,0,0,0.05
     font-family: 'Poppins', sans-serif;
     font-size: 1rem;
     transition: border-color 0.3s ease, background-color 0.3s ease;
-    min-height: 48px;
+    min-height: 48px; /* Ensures consistent height on iOS/iPad */
 }
 .card select {
     appearance: none;
