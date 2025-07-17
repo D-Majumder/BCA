@@ -20,6 +20,8 @@ const subjectForm = document.getElementById('subject-form');
 const subjectsList = document.getElementById('subjects-list');
 const batchForm = document.getElementById('batch-form');
 const batchesList = document.getElementById('batches-list');
+const syllabusForm = document.getElementById('syllabus-form'); // New
+const syllabusesList = document.getElementById('syllabuses-list'); // New
 const scheduleForm = document.getElementById('schedule-form');
 const scheduleBatchSelect = document.getElementById('schedule-batch');
 const scheduleDaySelect = document.getElementById('schedule-day');
@@ -31,7 +33,6 @@ const scheduleGrid = document.getElementById('schedule-grid');
 
 // --- DATA FETCHING & RENDERING ---
 
-// Generic Fetch Items
 async function fetchItems(tableName, listElement, renderFunc, orderBy = 'id') {
     const { data, error } = await supabase.from(tableName).select('*').order(orderBy);
     if (error) {
@@ -49,7 +50,6 @@ async function fetchItems(tableName, listElement, renderFunc, orderBy = 'id') {
     return data;
 }
 
-// RENDER FUNCTIONS (with data attributes for deletion)
 const renderSlot = slot => {
     const formatTime = timeStr => new Date(`1970-01-01T${timeStr}`).toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit', hour12: true });
     return `<li>${slot.period_name} (${formatTime(slot.start_time)} - ${formatTime(slot.end_time)}) <button class="delete-btn" data-id="${slot.id}" data-table="time_slots">✖</button></li>`;
@@ -57,18 +57,19 @@ const renderSlot = slot => {
 const renderTeacher = teacher => `<li>${teacher.name} <button class="delete-btn" data-id="${teacher.id}" data-table="teachers">✖</button></li>`;
 const renderSubject = subject => `<li>${subject.name} (${subject.code}) <button class="delete-btn" data-id="${subject.id}" data-table="subjects">✖</button></li>`;
 const renderBatch = batch => `<li>Year ${batch.year_level} - ${batch.batch_name} <button class="delete-btn" data-id="${batch.id}" data-table="batches">✖</button></li>`;
+const renderSyllabus = syllabus => `<li>Year ${syllabus.year_level} <a href="${syllabus.syllabus_url}" target="_blank">(link)</a> <button class="delete-btn" data-id="${syllabus.id}" data-table="syllabuses">✖</button></li>`; // New
 
 // FETCH FUNCTIONS
 const fetchSlots = () => fetchItems('time_slots', slotsList, renderSlot, 'start_time');
 const fetchTeachers = () => fetchItems('teachers', teachersList, renderTeacher, 'name');
 const fetchSubjects = () => fetchItems('subjects', subjectsList, renderSubject, 'name');
 const fetchBatches = () => fetchItems('batches', batchesList, renderBatch, 'year_level');
+const fetchSyllabuses = () => fetchItems('syllabuses', syllabusesList, renderSyllabus, 'year_level'); // New
 
 // --- EVENT DELEGATION FOR ALL CLICKS ---
 document.addEventListener('click', async function(event) {
     const target = event.target;
 
-    // Handle all Delete Buttons
     if (target.matches('.delete-btn')) {
         const id = target.dataset.id;
         const table = target.dataset.table;
@@ -79,18 +80,17 @@ document.addEventListener('click', async function(event) {
             if (error) {
                 alert(`Error deleting: ${error.message}`);
             } else {
-                // Refresh the correct part of the UI
                 if (table === 'announcements') fetchAnnouncements();
                 if (table === 'teachers') fetchTeachers();
                 if (table === 'subjects') fetchSubjects();
                 if (table === 'batches') fetchBatches();
                 if (table === 'time_slots') fetchSlots();
+                if (table === 'syllabuses') fetchSyllabuses(); // New
                 if (table === 'schedules') renderSchedule(batchSelect.value);
             }
         }
     }
 
-    // Handle Edit Announcement Button
     if (target.matches('.edit-announcement-btn')) {
         const id = target.dataset.id;
         const title = target.dataset.title.replace(/&quot;/g, '"');
@@ -106,7 +106,6 @@ document.addEventListener('click', async function(event) {
 });
 
 // --- FORM SUBMISSION LOGIC ---
-// RESTORED Add functionality for Core Data
 slotForm.addEventListener('submit', async e => {
     e.preventDefault();
     const period_name = document.getElementById('slot-name').value;
@@ -141,6 +140,15 @@ batchForm.addEventListener('submit', async e => {
     const { error } = await supabase.from('batches').insert([{ year_level, batch_name }]);
     if (error) { alert(error.message); }
     else { batchForm.reset(); fetchBatches(); }
+});
+
+syllabusForm.addEventListener('submit', async e => { // New
+    e.preventDefault();
+    const year_level = document.getElementById('syllabus-year').value;
+    const syllabus_url = document.getElementById('syllabus-url').value;
+    const { error } = await supabase.from('syllabuses').insert([{ year_level, syllabus_url }]);
+    if (error) { alert("Error adding syllabus. Note: Each year can only have one syllabus link. " + error.message); }
+    else { syllabusForm.reset(); fetchSyllabuses(); }
 });
 
 announcementForm.addEventListener('submit', async (event) => {
@@ -260,7 +268,6 @@ async function populateScheduleFormSelects() {
     scheduleTeacherSelect.innerHTML = `<option value="">-- None --</option>` + teachers.map(t => `<option value="${t.id}">${t.name}</option>`).join('');
 }
 
-
 // --- LIVE INFO & INITIALIZATION ---
 function updateDateTime() {
     const now = new Date();
@@ -285,22 +292,20 @@ async function fetchWeather() {
 }
 
 document.addEventListener('DOMContentLoaded', () => {
-    // Initialize core functionalities
     protectPage();
     handleLogout();
     initializeTheme();
     updateDateTime();
     fetchWeather();
     
-    // Fetch initial data for all dashboard sections
     fetchAnnouncements();
     fetchSlots();
     fetchTeachers();
     fetchSubjects();
     fetchBatches();
+    fetchSyllabuses(); // New
     populateScheduleFormSelects();
     
-    // Set intervals for live updates
     setInterval(updateDateTime, 1000);
     setInterval(fetchWeather, 900000);
 });

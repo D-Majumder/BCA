@@ -15,7 +15,7 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
-    <link rel="stylesheet" href="css/style.css?v=1.1">
+    <link rel="stylesheet" href="css/style.css?v=1.2">
 </head>
 <body>
     <div class="wrapper">
@@ -40,6 +40,7 @@
             <div class="management-section">
                 <h2>📚 Core Data Management</h2>
                 <div class="grid-container">
+                    <!-- Manage Time Slots -->
                     <div class="card">
                         <h3>Time Slots</h3>
                         <form id="slot-form">
@@ -52,6 +53,7 @@
                         </form>
                         <div class="item-list" id="slots-list"><p>Loading...</p></div>
                     </div>
+                    <!-- Manage Teachers -->
                     <div class="card">
                         <h3>Teachers</h3>
                         <form id="teacher-form">
@@ -60,6 +62,7 @@
                         </form>
                         <div class="item-list" id="teachers-list"><p>Loading...</p></div>
                     </div>
+                    <!-- Manage Subjects -->
                     <div class="card">
                         <h3>Subjects</h3>
                         <form id="subject-form">
@@ -69,6 +72,7 @@
                         </form>
                         <div class="item-list" id="subjects-list"><p>Loading...</p></div>
                     </div>
+                    <!-- Manage Batches -->
                     <div class="card">
                         <h3>Batches</h3>
                         <form id="batch-form">
@@ -77,6 +81,16 @@
                             <button type="submit">Add Batch</button>
                         </form>
                         <div class="item-list" id="batches-list"><p>Loading...</p></div>
+                    </div>
+                    <!-- NEW: Manage Syllabuses -->
+                    <div class="card">
+                        <h3>Syllabuses</h3>
+                        <form id="syllabus-form">
+                            <input type="number" id="syllabus-year" placeholder="Year (e.g., 1, 2, 3)" min="1" max="4" required>
+                            <input type="url" id="syllabus-url" placeholder="https://link.to/syllabus.pdf" required>
+                            <button type="submit">Add Syllabus</button>
+                        </form>
+                        <div class="item-list" id="syllabuses-list"><p>Loading...</p></div>
                     </div>
                 </div>
             </div>
@@ -146,6 +160,6 @@
         <a href="https://www.linkedin.com/in/iamdhrubamajumder/" target="_blank" title="LinkedIn"><i class="fab fa-linkedin"></i></a>
         <a href="https://github.com/D-Majumder" target="_blank" title="GitHub"><i class="fab fa-github"></i></a>
     </footer>
-    <script type="module" src="js/main-dashboard.js?v=1.1"></script>
+    <script type="module" src="js/main-dashboard.js?v=1.2"></script>
 </body>
 </html>

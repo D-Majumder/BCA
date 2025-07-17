@@ -6,6 +6,7 @@ const dateTimeElement = document.getElementById('datetime-display');
 const weatherElement = document.getElementById('weather-display');
 const yearSelect = document.getElementById('year-select');
 const batchSelect = document.getElementById('batch-select');
+const syllabusBtn = document.getElementById('syllabus-btn'); // New
 const currentClassInfo = document.getElementById('current-class-info');
 const upcomingClassInfo = document.getElementById('upcoming-class-info');
 const announcementsDisplay = document.getElementById('announcements-display');
@@ -15,6 +16,7 @@ const fullScheduleDisplay = document.getElementById('full-schedule-display');
 let allBatches = [];
 let allSchedules = [];
 let allHolidays = [];
+let allSyllabuses = []; // New
 
 // --- UTILITY FUNCTIONS ---
 const formatTime = (timeStr) => {
@@ -28,14 +30,20 @@ const timeToMinutes = (timeStr) => {
     return parseInt(h, 10) * 60 + parseInt(m, 10);
 };
 
-// --- DISPLAY LOGIC ---
+// --- INDEPENDENT DATA FETCHING & DISPLAY ---
 
-function displayAnnouncements(announcements) {
-    if (!announcements || announcements.length === 0) {
+async function loadAnnouncements() {
+    const { data, error } = await supabase.from('announcements').select('*').order('created_at', { ascending: false }).limit(5);
+    if (error) {
+        console.error("Error fetching announcements:", error);
+        announcementsDisplay.innerHTML = `<p style="color: #e74c3c;">Could not load announcements.</p>`;
+        return;
+    }
+    if (!data || data.length === 0) {
         announcementsDisplay.innerHTML = `<p>No recent announcements.</p>`;
         return;
     }
-    announcementsDisplay.innerHTML = announcements.map(a => `
+    announcementsDisplay.innerHTML = data.map(a => `
         <div class="card" style="margin-bottom: 1rem; text-align: left;">
             <h4>${a.title}</h4>
             <p>${a.content || ''}</p>
@@ -72,7 +80,7 @@ function displayFullSchedule(batchId) {
 function displaySmartInfo(batchId) {
     const now = new Date();
     const todayIST = now.toLocaleDateString('en-CA', { timeZone: 'Asia/Kolkata' });
-    const dayOfWeek = now.getDay() === 0 ? 7 : now.getDay(); // Monday = 1, Sunday = 7
+    const dayOfWeek = now.getDay() === 0 ? 7 : now.getDay();
 
     const holiday = allHolidays.find(h => h.holiday_date === todayIST);
     if (holiday) {
@@ -81,7 +89,7 @@ function displaySmartInfo(batchId) {
         return;
     }
     
-    if (dayOfWeek === 7) { // Sunday
+    if (dayOfWeek === 7) {
         currentClassInfo.innerHTML = `<p>It's Sunday!</p>`;
         upcomingClassInfo.innerHTML = `<p>Relax and recharge!</p>`;
         return;
@@ -89,7 +97,7 @@ function displaySmartInfo(batchId) {
     
     const scheduleForToday = allSchedules.filter(s => s.batch_id == batchId && s.day_of_week === dayOfWeek);
     
-    if (scheduleForToday.length === 0 && dayOfWeek === 6) { // Saturday with no classes
+    if (scheduleForToday.length === 0 && dayOfWeek === 6) {
         currentClassInfo.innerHTML = `<p>It's the weekend!</p>`;
         upcomingClassInfo.innerHTML = `<p>Enjoy!</p>`;
         return;
@@ -134,9 +142,27 @@ function clearDisplays() {
     currentClassInfo.innerHTML = `<p>Select your batch to see details.</p>`;
     upcomingClassInfo.innerHTML = `<p>Select your batch to see details.</p>`;
     fullScheduleDisplay.innerHTML = `<p>Select your batch to view the full schedule.</p>`;
+    syllabusBtn.classList.add('disabled');
+    syllabusBtn.href = '#';
 }
 
-// --- BATCH SELECTION ---
+// --- BATCH & SYLLABUS SELECTION ---
+function updateSyllabusButton(year) {
+    if (!year) {
+        syllabusBtn.classList.add('disabled');
+        syllabusBtn.href = '#';
+        return;
+    }
+    const syllabus = allSyllabuses.find(s => s.year_level == year);
+    if (syllabus && syllabus.syllabus_url) {
+        syllabusBtn.href = syllabus.syllabus_url;
+        syllabusBtn.classList.remove('disabled');
+    } else {
+        syllabusBtn.classList.add('disabled');
+        syllabusBtn.href = '#';
+    }
+}
+
 function populateYearSelect() {
     const years = [...new Set(allBatches.map(b => b.year_level))].sort((a, b) => a - b);
     yearSelect.innerHTML = '<option value="">-- Select Year --</option>' + years.map(y => `<option value="${y}">Year ${y}</option>`).join('');
@@ -152,6 +178,7 @@ function setupEventListeners() {
     yearSelect.addEventListener('change', () => {
         const selectedYear = yearSelect.value;
         batchSelect.disabled = !selectedYear;
+        updateSyllabusButton(selectedYear); // New
         if (selectedYear) {
             populateBatchSelect(selectedYear);
         }
@@ -175,9 +202,12 @@ function loadSavedSelection() {
     if (savedBatchId && allBatches.some(b => b.id == savedBatchId)) {
         const savedBatch = allBatches.find(b => b.id == savedBatchId);
         yearSelect.value = savedBatch.year_level;
+        updateSyllabusButton(savedBatch.year_level); // New
         populateBatchSelect(savedBatch.year_level);
         batchSelect.value = savedBatch.id;
         updateAllDisplays(savedBatchId);
+    } else {
+        clearDisplays();
     }
 }
 
@@ -204,7 +234,6 @@ async function fetchWeather() {
 
 // --- INITIALIZATION ---
 async function main() {
-    // Initialize visual elements first
     initializeTheme();
     updateDateTime();
     fetchWeather();
@@ -212,35 +241,33 @@ async function main() {
     setInterval(fetchWeather, 900000);
     setupEventListeners();
 
-    // Fetch all required data from the database
     try {
-        const [batchesRes, schedulesRes, holidaysRes, announcementsRes] = await Promise.all([
+        const [batchesRes, schedulesRes, holidaysRes, syllabusesRes] = await Promise.all([
             supabase.from('batches').select('*').order('year_level'),
             supabase.from('schedules').select(`*, time_slots(*), subjects(*), teachers(*)`),
             supabase.from('holidays').select('*'),
-            supabase.from('announcements').select('*').order('created_at', { ascending: false }).limit(5)
+            supabase.from('syllabuses').select('*') // New
         ]);
 
-        // Assign data to global variables
         allBatches = batchesRes.data || [];
         allSchedules = schedulesRes.data || [];
         allHolidays = holidaysRes.data || [];
+        allSyllabuses = syllabusesRes.data || []; // New
 
-        // Populate the UI with the fetched data
-        displayAnnouncements(announcementsRes.data);
         populateYearSelect();
         loadSavedSelection();
 
-        // Set up a recurring check for the smart info
-        setInterval(() => {
-            const selectedBatchId = batchSelect.value;
-            if (selectedBatchId) displaySmartInfo(selectedBatchId);
-        }, 60000);
-
     } catch (error) {
         console.error("CRITICAL ERROR: Could not fetch initial data.", error);
-        document.querySelector('.dashboard-container').innerHTML = `<div class="card" style="color: red;"><h2>Error</h2><p>Could not load data from the server. Please check your internet connection and try again.</p></div>`;
+        document.querySelector('.dashboard-container').innerHTML = `<div class="card" style="color: red;"><h2>Error</h2><p>Could not load schedule data. Please check your internet connection and try again.</p></div>`;
     }
+    
+    loadAnnouncements();
+
+    setInterval(() => {
+        const selectedBatchId = batchSelect.value;
+        if (selectedBatchId) displaySmartInfo(selectedBatchId);
+    }, 60000);
 }
 
 document.addEventListener('DOMContentLoaded', main);
