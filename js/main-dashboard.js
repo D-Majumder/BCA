@@ -30,10 +30,17 @@ const scheduleSubjectSelect = document.getElementById('schedule-subject');
 const scheduleTeacherSelect = document.getElementById('schedule-teacher');
 const batchSelect = document.getElementById('batch-select');
 const scheduleGrid = document.getElementById('schedule-grid');
-const auditLogList = document.getElementById('audit-log-list'); // For new feature
+const auditLogList = document.getElementById('audit-log-list');
+// New elements for the Edit Modal
+const editModal = document.getElementById('edit-modal');
+const closeModalBtn = document.getElementById('close-modal-btn');
+const editScheduleForm = document.getElementById('edit-schedule-form');
+const editScheduleIdInput = document.getElementById('edit-schedule-id');
+const editScheduleSubjectSelect = document.getElementById('edit-schedule-subject');
+const editScheduleTeacherSelect = document.getElementById('edit-schedule-teacher');
 
 
-// --- NEW: AUDIT LOGGING ---
+// --- AUDIT LOGGING ---
 async function logAction(action, details = '') {
     const { data: { user } } = await supabase.auth.getUser();
     if (!user) return;
@@ -154,6 +161,11 @@ document.addEventListener('click', async function(event) {
         formSubmitButton.textContent = 'Update Announcement';
         formCancelButton.style.display = 'inline-block';
         window.scrollTo({ top: announcementForm.offsetTop - 20, behavior: 'smooth' });
+    }
+
+    if (target.matches('.edit-class-btn')) {
+        const id = target.dataset.id;
+        openEditModal(id);
     }
 });
 
@@ -310,7 +322,7 @@ async function renderSchedule(batchId) {
         scheduleGrid.innerHTML = `<p>Select a batch to view its schedule.</p>`;
         return;
     }
-    const { data, error } = await supabase.from('schedules').select(`id, day_of_week, time_slots(*), subjects(*), teachers(*)`).eq('batch_id', batchId).order('day_of_week').order('start_time', { referencedTable: 'time_slots' });
+    const { data, error } = await supabase.from('schedules').select(`id, day_of_week, time_slots(*), subjects(id, name, code), teachers(id, name)`).eq('batch_id', batchId).order('day_of_week').order('start_time', { referencedTable: 'time_slots' });
     if (error) { console.error('Error fetching schedule:', error); return; }
     const days = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
     scheduleGrid.innerHTML = days.map((day, index) => {
@@ -321,6 +333,7 @@ async function renderSchedule(batchId) {
                 <h4>${day}</h4>
                 ${classesForDay.length > 0 ? classesForDay.map(c => `
                     <div class="class-card">
+                        <button class="edit-class-btn" data-id="${c.id}">✎</button>
                         <button class="delete-btn" data-id="${c.id}" data-table="schedules">✖</button>
                         <strong>${c.subjects.name}</strong>
                         <span>${c.teachers ? c.teachers.name : 'No Teacher'}</span><br>
@@ -346,9 +359,69 @@ async function populateScheduleFormSelects() {
         const formatTime = timeStr => new Date(`1970-01-01T${timeStr}`).toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit', hour12: true });
         return `<option value="${s.id}">${s.period_name} (${formatTime(s.start_time)})</option>`
     }).join('');
-    scheduleSubjectSelect.innerHTML = subjects.map(s => `<option value="${s.id}">${s.name} (${s.code})</option>`).join('');
-    scheduleTeacherSelect.innerHTML = `<option value="">-- None --</option>` + teachers.map(t => `<option value="${t.id}">${t.name}</option>`).join('');
+    const subjectOptions = subjects.map(s => `<option value="${s.id}">${s.name} (${s.code})</option>`).join('');
+    scheduleSubjectSelect.innerHTML = subjectOptions;
+    editScheduleSubjectSelect.innerHTML = subjectOptions; // Populate edit modal too
+    const teacherOptions = `<option value="">-- None --</option>` + teachers.map(t => `<option value="${t.id}">${t.name}</option>`).join('');
+    scheduleTeacherSelect.innerHTML = teacherOptions;
+    editScheduleTeacherSelect.innerHTML = teacherOptions; // Populate edit modal too
 }
+
+// --- NEW: EDIT SCHEDULE MODAL LOGIC ---
+async function openEditModal(scheduleId) {
+    const { data: scheduleItem, error } = await supabase
+        .from('schedules')
+        .select(`*, subjects(id, name), teachers(id, name)`)
+        .eq('id', scheduleId)
+        .single();
+
+    if (error) {
+        alert("Error fetching class details: " + error.message);
+        return;
+    }
+
+    editScheduleIdInput.value = scheduleItem.id;
+    editScheduleSubjectSelect.value = scheduleItem.subjects.id;
+    editScheduleTeacherSelect.value = scheduleItem.teachers ? scheduleItem.teachers.id : '';
+
+    editModal.style.display = 'flex';
+    setTimeout(() => editModal.classList.add('active'), 10);
+}
+
+function closeModal() {
+    editModal.classList.remove('active');
+    setTimeout(() => editModal.style.display = 'none', 300);
+}
+
+editScheduleForm.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const id = editScheduleIdInput.value;
+    const updatedData = {
+        subject_id: editScheduleSubjectSelect.value,
+        teacher_id: editScheduleTeacherSelect.value || null
+    };
+
+    const { error } = await supabase
+        .from('schedules')
+        .update(updatedData)
+        .eq('id', id);
+
+    if (error) {
+        alert("Error updating class: " + error.message);
+    } else {
+        logAction('Updated Class in Schedule', `ID: ${id}`);
+        fetchAuditLogs();
+        closeModal();
+        renderSchedule(batchSelect.value);
+    }
+});
+
+closeModalBtn.addEventListener('click', closeModal);
+editModal.addEventListener('click', (e) => {
+    if (e.target === editModal) {
+        closeModal();
+    }
+});
 
 
 // --- LIVE INFO & INITIALIZATION ---
@@ -375,14 +448,12 @@ async function fetchWeather() {
 }
 
 document.addEventListener('DOMContentLoaded', () => {
-    // Initialize core functionalities
     protectPage();
     handleLogout();
     initializeTheme();
     updateDateTime();
     fetchWeather();
     
-    // Fetch initial data for all dashboard sections
     fetchAnnouncements();
     fetchSlots();
     fetchTeachers();
@@ -390,9 +461,8 @@ document.addEventListener('DOMContentLoaded', () => {
     fetchBatches();
     fetchSyllabuses();
     populateScheduleFormSelects();
-    fetchAuditLogs(); // New
+    fetchAuditLogs();
     
-    // Set intervals for live updates
     setInterval(updateDateTime, 1000);
     setInterval(fetchWeather, 900000);
 });
