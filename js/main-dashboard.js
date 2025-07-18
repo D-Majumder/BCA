@@ -254,7 +254,6 @@ scheduleForm.addEventListener('submit', async e => {
         teacher_id: scheduleTeacherSelect.value || null
     };
 
-    // Clash Detection Logic
     const { data, error: checkError } = await supabase.from('schedules')
         .select('id')
         .eq('batch_id', newScheduleItem.batch_id)

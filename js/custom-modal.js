@@ -9,10 +9,12 @@ export function customAlert(message) {
     setTimeout(() => alertModal.classList.add('active'), 10);
 }
 
-alertOkBtn.addEventListener('click', () => {
+function closeAlert() {
     alertModal.classList.remove('active');
     setTimeout(() => alertModal.style.display = 'none', 300);
-});
+}
+
+alertOkBtn.addEventListener('click', closeAlert);
 
 // --- Custom Confirm Modal ---
 const confirmModal = document.getElementById('confirm-modal');
@@ -45,7 +47,7 @@ confirmNoBtn.addEventListener('click', () => closeConfirm(false));
 // Close modals if clicking on the overlay
 alertModal.addEventListener('click', (e) => {
     if (e.target === alertModal) {
-        closeConfirm(false);
+        closeAlert();
     }
 });
 confirmModal.addEventListener('click', (e) => {
