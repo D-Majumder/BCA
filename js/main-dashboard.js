@@ -1,6 +1,7 @@
 import { supabase } from './supabase-client.js';
 import { initializeTheme } from './theme.js';
 import { protectPage, handleLogout } from './auth.js';
+import { customAlert, customConfirm } from './custom-modals.js';
 
 // --- DOM ELEMENTS ---
 const dateTimeElement = document.getElementById('datetime-display');
@@ -31,7 +32,6 @@ const scheduleTeacherSelect = document.getElementById('schedule-teacher');
 const batchSelect = document.getElementById('batch-select');
 const scheduleGrid = document.getElementById('schedule-grid');
 const auditLogList = document.getElementById('audit-log-list');
-// New elements for the Edit Modal
 const editModal = document.getElementById('edit-modal');
 const closeModalBtn = document.getElementById('close-modal-btn');
 const editScheduleForm = document.getElementById('edit-schedule-form');
@@ -44,53 +44,26 @@ const editScheduleTeacherSelect = document.getElementById('edit-schedule-teacher
 async function logAction(action, details = '') {
     const { data: { user } } = await supabase.auth.getUser();
     if (!user) return;
-
-    const { error } = await supabase.from('audit_logs').insert({
-        admin_email: user.email,
-        action,
-        details
-    });
-
-    if (error) {
-        console.error('Error logging action:', error);
-    }
+    const { error } = await supabase.from('audit_logs').insert({ admin_email: user.email, action, details });
+    if (error) console.error('Error logging action:', error);
 }
 
 async function fetchAuditLogs() {
-    const { data, error } = await supabase
-        .from('audit_logs')
-        .select('*')
-        .order('created_at', { ascending: false })
-        .limit(30);
-
+    const { data, error } = await supabase.from('audit_logs').select('*').order('created_at', { ascending: false }).limit(30);
     if (error) {
         console.error('Error fetching audit logs:', error);
         auditLogList.innerHTML = `<p>Could not load activity.</p>`;
         return;
     }
-    
     const renderLog = log => {
         const timestamp = new Date(log.created_at).toLocaleString('en-IN', { dateStyle: 'short', timeStyle: 'short' });
-        return `
-            <li class="log-item">
-                <div class="log-header">
-                    <span class="action">${log.action}</span>
-                    <span class="email">${log.admin_email}</span>
-                </div>
-                <div class="log-details">
-                    <span>${log.details || ''}</span> - 
-                    <span class="timestamp">${timestamp}</span>
-                </div>
-            </li>
-        `;
+        return `<li class="log-item"><div class="log-header"><span class="action">${log.action}</span><span class="email">${log.admin_email}</span></div><div class="log-details"><span>${log.details || ''}</span> - <span class="timestamp">${timestamp}</span></div></li>`;
     };
-    
     auditLogList.innerHTML = `<ul>${data.map(renderLog).join('')}</ul>`;
 }
 
 
 // --- DATA FETCHING & RENDERING ---
-
 async function fetchItems(tableName, listElement, renderFunc, orderBy = 'id') {
     const { data, error } = await supabase.from(tableName).select('*').order(orderBy);
     if (error) {
@@ -132,10 +105,11 @@ document.addEventListener('click', async function(event) {
         const table = target.dataset.table;
         if (!id || !table) return;
 
-        if (confirm(`Are you sure you want to delete this item?`)) {
+        const confirmed = await customConfirm(`Are you sure you want to delete this item?`);
+        if (confirmed) {
             const { error } = await supabase.from(table).delete().eq('id', id);
             if (error) {
-                alert(`Error deleting: ${error.message}`);
+                customAlert(`Error deleting: ${error.message}`);
             } else {
                 logAction(`Deleted item from ${table}`, `ID: ${id}`);
                 fetchAuditLogs();
@@ -176,7 +150,7 @@ slotForm.addEventListener('submit', async e => {
     const start_time = document.getElementById('slot-start-time').value;
     const end_time = document.getElementById('slot-end-time').value;
     const { error } = await supabase.from('time_slots').insert([{ period_name, start_time, end_time }]);
-    if (error) { alert(error.message); } 
+    if (error) { customAlert(error.message); } 
     else {
         logAction('Created Time Slot', `${period_name} (${start_time} - ${end_time})`);
         fetchAuditLogs();
@@ -189,7 +163,7 @@ teacherForm.addEventListener('submit', async e => {
     e.preventDefault();
     const name = document.getElementById('teacher-name').value;
     const { error } = await supabase.from('teachers').insert([{ name }]);
-    if (error) { alert(error.message); }
+    if (error) { customAlert(error.message); }
     else {
         logAction('Created Teacher', name);
         fetchAuditLogs();
@@ -203,7 +177,7 @@ subjectForm.addEventListener('submit', async e => {
     const name = document.getElementById('subject-name').value;
     const code = document.getElementById('subject-code').value;
     const { error } = await supabase.from('subjects').insert([{ name, code }]);
-    if (error) { alert(error.message); }
+    if (error) { customAlert(error.message); }
     else {
         logAction('Created Subject', `${name} (${code})`);
         fetchAuditLogs();
@@ -217,7 +191,7 @@ batchForm.addEventListener('submit', async e => {
     const year_level = document.getElementById('batch-year').value;
     const batch_name = document.getElementById('batch-name').value;
     const { error } = await supabase.from('batches').insert([{ year_level, batch_name }]);
-    if (error) { alert(error.message); }
+    if (error) { customAlert(error.message); }
     else {
         logAction('Created Batch', `Year ${year_level} - ${batch_name}`);
         fetchAuditLogs();
@@ -231,7 +205,7 @@ syllabusForm.addEventListener('submit', async e => {
     const year_level = document.getElementById('syllabus-year').value;
     const syllabus_url = document.getElementById('syllabus-url').value;
     const { error } = await supabase.from('syllabuses').insert([{ year_level, syllabus_url }]);
-    if (error) { alert("Error adding syllabus. Note: Each year can only have one syllabus link. " + error.message); }
+    if (error) { customAlert("Error adding syllabus. Note: Each year can only have one syllabus link. " + error.message); }
     else {
         logAction('Added Syllabus', `Year ${year_level}`);
         fetchAuditLogs();
@@ -254,7 +228,7 @@ announcementForm.addEventListener('submit', async (event) => {
         if (!error) logAction('Created Announcement', title);
     }
     if (error) {
-        alert('Error: ' + error.message);
+        customAlert('Error: ' + error.message);
     } else {
         fetchAuditLogs();
         resetForm();
@@ -279,13 +253,31 @@ scheduleForm.addEventListener('submit', async e => {
         subject_id: scheduleSubjectSelect.value,
         teacher_id: scheduleTeacherSelect.value || null
     };
+
+    // Clash Detection Logic
+    const { data, error: checkError } = await supabase.from('schedules')
+        .select('id')
+        .eq('batch_id', newScheduleItem.batch_id)
+        .eq('day_of_week', newScheduleItem.day_of_week)
+        .eq('time_slot_id', newScheduleItem.time_slot_id);
+
+    if (checkError) {
+        customAlert("Error checking for clashes: " + checkError.message);
+        return;
+    }
+
+    if (data && data.length > 0) {
+        customAlert("Clash Detected: A class already exists for this batch at this specific day and time slot.");
+        return;
+    }
+
     const { error } = await supabase.from('schedules').insert([newScheduleItem]);
     if (error) {
-        alert("Error adding class: " + error.message);
+        customAlert("Error adding class: " + error.message);
     } else {
         logAction('Added Class to Schedule', `Batch ID: ${newScheduleItem.batch_id}`);
         fetchAuditLogs();
-        alert("Class added successfully!");
+        customAlert("Class added successfully!");
         renderSchedule(batchSelect.value);
     }
 });
@@ -361,13 +353,13 @@ async function populateScheduleFormSelects() {
     }).join('');
     const subjectOptions = subjects.map(s => `<option value="${s.id}">${s.name} (${s.code})</option>`).join('');
     scheduleSubjectSelect.innerHTML = subjectOptions;
-    editScheduleSubjectSelect.innerHTML = subjectOptions; // Populate edit modal too
+    editScheduleSubjectSelect.innerHTML = subjectOptions;
     const teacherOptions = `<option value="">-- None --</option>` + teachers.map(t => `<option value="${t.id}">${t.name}</option>`).join('');
     scheduleTeacherSelect.innerHTML = teacherOptions;
-    editScheduleTeacherSelect.innerHTML = teacherOptions; // Populate edit modal too
+    editScheduleTeacherSelect.innerHTML = teacherOptions;
 }
 
-// --- NEW: EDIT SCHEDULE MODAL LOGIC ---
+// --- EDIT SCHEDULE MODAL LOGIC ---
 async function openEditModal(scheduleId) {
     const { data: scheduleItem, error } = await supabase
         .from('schedules')
@@ -376,7 +368,7 @@ async function openEditModal(scheduleId) {
         .single();
 
     if (error) {
-        alert("Error fetching class details: " + error.message);
+        customAlert("Error fetching class details: " + error.message);
         return;
     }
 
@@ -407,7 +399,7 @@ editScheduleForm.addEventListener('submit', async (e) => {
         .eq('id', id);
 
     if (error) {
-        alert("Error updating class: " + error.message);
+        customAlert("Error updating class: " + error.message);
     } else {
         logAction('Updated Class in Schedule', `ID: ${id}`);
         fetchAuditLogs();

@@ -273,6 +273,21 @@ body.night-theme .class-card {
 .class-card:hover .delete-class-btn {
     opacity: 1;
 }
+.class-card .edit-class-btn {
+    position: absolute;
+    top: 5px;
+    right: 35px;
+    background: none;
+    border: none;
+    color: #3498db;
+    cursor: pointer;
+    font-size: 1.1rem;
+    opacity: 0.5;
+    transition: opacity 0.3s ease;
+}
+.class-card:hover .edit-class-btn {
+    opacity: 1;
+}
 
 /* --- Action Button Styles --- */
 .action-buttons-container {
@@ -337,6 +352,48 @@ body.night-theme .log-item .log-details {
     color: #8b949e;
 }
 
+/* --- Modal Styles --- */
+.modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.6);
+    backdrop-filter: blur(5px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+.modal-content {
+    position: relative;
+    max-width: 500px;
+    width: 90%;
+    transform: scale(0.95);
+    transition: transform 0.3s ease;
+}
+.modal-close-btn {
+    position: absolute; /* This is the fix for the button */
+    top: 15px;
+    right: 15px;
+    background: none;
+    border: none;
+    font-size: 1.5rem;
+    cursor: pointer;
+    color: #888;
+}
+body.night-theme .modal-close-btn { color: #ccc; }
+.modal-overlay.active { opacity: 1; }
+.modal-overlay.active .modal-content { transform: scale(1); }
+.confirm-buttons {
+    display: flex;
+    gap: 1rem;
+    margin-top: 1.5rem;
+}
+
 /* --- Footer --- */
 .footer { flex-shrink: 0; text-align: center; padding: 1rem; font-size: 0.9rem; width: 100%; }
 body.day-theme .footer { background-color: #e9ecef; color: #555; }
@@ -382,68 +439,4 @@ body.night-theme .shooting-star { display: block; position: fixed; width: 2px; h
     0% { transform: scale(1); opacity: 0.8; }
     50% { transform: scale(1.1); opacity: 1; }
     100% { transform: scale(1); opacity: 0.8; }
-}
-/* --- NEW: Edit Modal Styles --- */
-.modal-overlay {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background-color: rgba(0, 0, 0, 0.6);
-    backdrop-filter: blur(5px);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    z-index: 1000;
-    opacity: 0;
-    transition: opacity 0.3s ease;
-}
-
-.modal-content {
-    position: relative;
-    max-width: 500px;
-    width: 90%;
-    transform: scale(0.95);
-    transition: transform 0.3s ease;
-}
-
-.modal-close-btn {
-    position: absolute;
-    top: 15px;
-    right: 15px;
-    background: none;
-    border: none;
-    font-size: 1.5rem;
-    cursor: pointer;
-    color: #888;
-}
-
-body.night-theme .modal-close-btn {
-    color: #ccc;
-}
-
-.modal-overlay.active {
-    opacity: 1;
-}
-
-.modal-overlay.active .modal-content {
-    transform: scale(1);
-}
-
-.class-card .edit-class-btn {
-    position: absolute;
-    top: 5px;
-    right: 35px;
-    background: none;
-    border: none;
-    color: #3498db;
-    cursor: pointer;
-    font-size: 1.1rem;
-    opacity: 0.5;
-    transition: opacity 0.3s ease;
-}
-
-.class-card:hover .edit-class-btn {
-    opacity: 1;
 }
