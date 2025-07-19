@@ -6,7 +6,7 @@ const dateTimeElement = document.getElementById('datetime-display');
 const weatherElement = document.getElementById('weather-display');
 const yearSelect = document.getElementById('year-select');
 const batchSelect = document.getElementById('batch-select');
-const syllabusBtn = document.getElementById('syllabus-btn'); // New
+const syllabusBtn = document.getElementById('syllabus-btn');
 const currentClassInfo = document.getElementById('current-class-info');
 const upcomingClassInfo = document.getElementById('upcoming-class-info');
 const announcementsDisplay = document.getElementById('announcements-display');
@@ -16,7 +16,7 @@ const fullScheduleDisplay = document.getElementById('full-schedule-display');
 let allBatches = [];
 let allSchedules = [];
 let allHolidays = [];
-let allSyllabuses = []; // New
+let allSyllabuses = [];
 
 // --- UTILITY FUNCTIONS ---
 const formatTime = (timeStr) => {
@@ -43,13 +43,20 @@ async function loadAnnouncements() {
         announcementsDisplay.innerHTML = `<p>No recent announcements.</p>`;
         return;
     }
-    announcementsDisplay.innerHTML = data.map(a => `
+    announcementsDisplay.innerHTML = data.map(a => {
+        // Check if a link and text exist for the announcement
+        const linkButton = (a.link_url && a.link_text)
+            ? `<a href="${a.link_url}" target="_blank" class="action-btn student-login-btn" style="margin-top: 1rem; display: inline-flex;">${a.link_text}</a>`
+            : '';
+
+        return `
         <div class="card" style="margin-bottom: 1rem; text-align: left;">
             <h4>${a.title}</h4>
             <p>${a.content || ''}</p>
-            <small>Posted: ${new Date(a.created_at).toLocaleDateString('en-IN')}</small>
+            ${linkButton}
+            <small style="display: block; margin-top: 1rem;">Posted: ${new Date(a.created_at).toLocaleDateString('en-IN')}</small>
         </div>
-    `).join('');
+    `}).join('');
 }
 
 function displayFullSchedule(batchId) {
@@ -178,7 +185,7 @@ function setupEventListeners() {
     yearSelect.addEventListener('change', () => {
         const selectedYear = yearSelect.value;
         batchSelect.disabled = !selectedYear;
-        updateSyllabusButton(selectedYear); // New
+        updateSyllabusButton(selectedYear);
         if (selectedYear) {
             populateBatchSelect(selectedYear);
         }
@@ -202,7 +209,7 @@ function loadSavedSelection() {
     if (savedBatchId && allBatches.some(b => b.id == savedBatchId)) {
         const savedBatch = allBatches.find(b => b.id == savedBatchId);
         yearSelect.value = savedBatch.year_level;
-        updateSyllabusButton(savedBatch.year_level); // New
+        updateSyllabusButton(savedBatch.year_level);
         populateBatchSelect(savedBatch.year_level);
         batchSelect.value = savedBatch.id;
         updateAllDisplays(savedBatchId);
@@ -246,13 +253,13 @@ async function main() {
             supabase.from('batches').select('*').order('year_level'),
             supabase.from('schedules').select(`*, time_slots(*), subjects(*), teachers(*)`),
             supabase.from('holidays').select('*'),
-            supabase.from('syllabuses').select('*') // New
+            supabase.from('syllabuses').select('*')
         ]);
 
         allBatches = batchesRes.data || [];
         allSchedules = schedulesRes.data || [];
         allHolidays = holidaysRes.data || [];
-        allSyllabuses = syllabusesRes.data || []; // New
+        allSyllabuses = syllabusesRes.data || [];
 
         populateYearSelect();
         loadSavedSelection();

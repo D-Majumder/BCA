@@ -182,6 +182,13 @@ body.night-theme .card textarea:focus {
 body.day-theme .item-list li { background-color: #f8f9fa; }
 .item-list li .delete-btn { background: none; border: none; color: #e74c3c; cursor: pointer; font-size: 1.1rem; }
 
+/* --- NEW: Link Style Fix --- */
+.item-list a {
+    color: #3498db;
+    text-decoration: none;
+    font-weight: 500;
+}
+
 /* Custom Scrollbar Styling */
 .item-list::-webkit-scrollbar { width: 8px; }
 .item-list::-webkit-scrollbar-track { background: rgba(0,0,0,0.05); border-radius: 10px; }
@@ -376,7 +383,7 @@ body.night-theme .log-item .log-details {
     transition: transform 0.3s ease;
 }
 .modal-close-btn {
-    position: absolute; /* This is the fix for the button */
+    position: absolute;
     top: 15px;
     right: 15px;
     background: none;

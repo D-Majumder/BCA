@@ -41,7 +41,7 @@ loginForm.addEventListener('submit', async (event) => {
     if (error) {
         alert('Login Failed: ' + error.message);
     } else {
-        window.location.href = 'dashboard.html';
+        window.location.href = 'alurdom.html';
     }
 });
 

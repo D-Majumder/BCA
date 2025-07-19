@@ -11,6 +11,8 @@ const announcementForm = document.getElementById('announcement-form');
 const announcementIdInput = document.getElementById('announcement-id');
 const announcementTitleInput = document.getElementById('announcement-title');
 const announcementContentInput = document.getElementById('announcement-content');
+const announcementLinkTextInput = document.getElementById('announcement-link-text'); // New
+const announcementLinkUrlInput = document.getElementById('announcement-link-url'); // New
 const formSubmitButton = document.getElementById('form-submit-button');
 const formCancelButton = document.getElementById('form-cancel-button');
 const slotForm = document.getElementById('slot-form');
@@ -128,10 +130,14 @@ document.addEventListener('click', async function(event) {
         const id = target.dataset.id;
         const title = target.dataset.title.replace(/&quot;/g, '"');
         const content = target.dataset.content.replace(/&quot;/g, '"');
+        const linkText = target.dataset.linkText.replace(/&quot;/g, '"');
+        const linkUrl = target.dataset.linkUrl.replace(/&quot;/g, '"');
         
         announcementIdInput.value = id;
         announcementTitleInput.value = title;
         announcementContentInput.value = content;
+        announcementLinkTextInput.value = linkText;
+        announcementLinkUrlInput.value = linkUrl;
         formSubmitButton.textContent = 'Update Announcement';
         formCancelButton.style.display = 'inline-block';
         window.scrollTo({ top: announcementForm.offsetTop - 20, behavior: 'smooth' });
@@ -219,12 +225,17 @@ announcementForm.addEventListener('submit', async (event) => {
     const id = announcementIdInput.value;
     const title = announcementTitleInput.value;
     const content = announcementContentInput.value;
+    const link_text = announcementLinkTextInput.value;
+    const link_url = announcementLinkUrlInput.value;
+
+    const announcementData = { title, content, link_text, link_url };
+
     let error;
     if (id) {
-        ({ error } = await supabase.from('announcements').update({ title, content }).eq('id', id));
+        ({ error } = await supabase.from('announcements').update(announcementData).eq('id', id));
         if (!error) logAction('Updated Announcement', title);
     } else {
-        ({ error } = await supabase.from('announcements').insert([{ title, content }]));
+        ({ error } = await supabase.from('announcements').insert([announcementData]));
         if (!error) logAction('Created Announcement', title);
     }
     if (error) {
@@ -295,17 +306,28 @@ async function fetchAnnouncements() {
         announcementsList.innerHTML = `<p>No announcements yet.</p>`;
         return;
     }
-    announcementsList.innerHTML = data.map(announcement => `
+    announcementsList.innerHTML = data.map(announcement => {
+        const linkButton = (announcement.link_url && announcement.link_text)
+            ? `<a href="${announcement.link_url}" target="_blank" class="action-btn syllabus-btn" style="margin-top: 1rem; display: inline-flex;">${announcement.link_text}</a>`
+            : '';
+
+        return `
         <div class="card" style="margin-bottom: 1rem; text-align: left;">
             <h4>${announcement.title}</h4>
             <p>${announcement.content || ''}</p>
-            <small>Posted on: ${new Date(announcement.created_at).toLocaleString('en-IN')}</small>
+            ${linkButton}
+            <small style="display: block; margin-top: 1rem;">Posted on: ${new Date(announcement.created_at).toLocaleString('en-IN')}</small>
             <div style="margin-top: 1rem;">
-                <button class="edit-announcement-btn" data-id="${announcement.id}" data-title="${announcement.title.replace(/"/g, '&quot;')}" data-content="${(announcement.content || '').replace(/"/g, '&quot;')}">Edit</button>
+                <button class="edit-announcement-btn" 
+                    data-id="${announcement.id}" 
+                    data-title="${announcement.title.replace(/"/g, '&quot;')}" 
+                    data-content="${(announcement.content || '').replace(/"/g, '&quot;')}"
+                    data-link-text="${(announcement.link_text || '').replace(/"/g, '&quot;')}"
+                    data-link-url="${(announcement.link_url || '').replace(/"/g, '&quot;')}">Edit</button>
                 <button class="delete-btn cancel-button" data-id="${announcement.id}" data-table="announcements">Delete</button>
             </div>
         </div>
-    `).join('');
+    `}).join('');
 }
 
 async function renderSchedule(batchId) {

@@ -15,7 +15,7 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
-    <link rel="stylesheet" href="css/style.css?v=1.6">
+    <link rel="stylesheet" href="css/style.css?v=1.7">
 </head>
 <body>
     <div class="wrapper">
@@ -98,6 +98,13 @@
                     <input type="text" id="announcement-title" placeholder="e.g., Holiday Declared" required>
                     <label for="announcement-content">Content (Optional)</label>
                     <textarea id="announcement-content" placeholder="e.g., College will be closed on Monday."></textarea>
+                    
+                    <!-- NEW FIELDS FOR ANNOUNCEMENT LINK -->
+                    <label for="announcement-link-text">Link Text (Optional)</label>
+                    <input type="text" id="announcement-link-text" placeholder="e.g., Read More Here">
+                    <label for="announcement-link-url">Link URL (Optional)</label>
+                    <input type="url" id="announcement-link-url" placeholder="https://example.com/more-info">
+
                     <button type="submit" id="form-submit-button">Publish Announcement</button>
                     <button type="button" id="form-cancel-button" class="cancel-button" style="display:none;">Cancel Edit</button>
                 </form>
@@ -198,6 +205,7 @@
         </div>
     </div>
 
-    <script type="module" src="js/main-dashboard.js?v=1.6"></script>
+    <script type="module" src="js/main-dashboard.js?v=1.7"></script>
+    <script type="module" src="js/custom-modals.js?v=1.7"></script>
 </body>
 </html>
