@@ -99,7 +99,6 @@
                     <label for="announcement-content">Content (Optional)</label>
                     <textarea id="announcement-content" placeholder="e.g., College will be closed on Monday."></textarea>
                     
-                    <!-- NEW FIELDS FOR ANNOUNCEMENT LINK -->
                     <label for="announcement-link-text">Link Text (Optional)</label>
                     <input type="text" id="announcement-link-text" placeholder="e.g., Read More Here">
                     <label for="announcement-link-url">Link URL (Optional)</label>
@@ -169,38 +168,53 @@
         <a href="https://github.com/D-Majumder" target="_blank" title="GitHub"><i class="fab fa-github"></i></a>
     </footer>
 
+    <!-- MODAL STRUCTURE UPDATED HERE -->
     <div id="edit-modal" class="modal-overlay" style="display: none;">
-        <div class="modal-content card">
-            <button id="close-modal-btn" class="modal-close-btn">✖</button>
-            <h3>Edit Class</h3>
-            <form id="edit-schedule-form">
-                <input type="hidden" id="edit-schedule-id">
-                <div>
-                    <label for="edit-schedule-subject">Subject</label>
-                    <select id="edit-schedule-subject" required></select>
-                </div>
-                <div>
-                    <label for="edit-schedule-teacher">Teacher</label>
-                    <select id="edit-schedule-teacher"></select>
-                </div>
-                <button type="submit" style="margin-top: 1.5rem;">Save Changes</button>
-            </form>
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Edit Class</h3>
+                <button id="close-modal-btn" class="modal-close-btn">✖</button>
+            </div>
+            <div class="modal-body">
+                <form id="edit-schedule-form">
+                    <input type="hidden" id="edit-schedule-id">
+                    <div>
+                        <label for="edit-schedule-subject">Subject</label>
+                        <select id="edit-schedule-subject" required></select>
+                    </div>
+                    <div>
+                        <label for="edit-schedule-teacher">Teacher</label>
+                        <select id="edit-schedule-teacher"></select>
+                    </div>
+                    <button type="submit" style="margin-top: 1.5rem;">Save Changes</button>
+                </form>
+            </div>
         </div>
     </div>
 
     <div id="alert-modal" class="modal-overlay" style="display: none;">
-        <div class="modal-content card">
-            <h3 id="alert-message">Message goes here</h3>
-            <button id="alert-ok-btn" style="margin-top: 1.5rem;">OK</button>
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 id="alert-title">Notification</h3>
+            </div>
+            <div class="modal-body">
+                <p id="alert-message">Message goes here</p>
+                <button id="alert-ok-btn" style="margin-top: 1.5rem;">OK</button>
+            </div>
         </div>
     </div>
 
     <div id="confirm-modal" class="modal-overlay" style="display: none;">
-        <div class="modal-content card">
-            <h3 id="confirm-message">Are you sure?</h3>
-            <div class="confirm-buttons">
-                <button id="confirm-yes-btn">Confirm</button>
-                <button id="confirm-no-btn" class="cancel-button">Cancel</button>
+        <div class="modal-content">
+             <div class="modal-header">
+                <h3>Confirmation</h3>
+            </div>
+            <div class="modal-body">
+                <p id="confirm-message">Are you sure?</p>
+                <div class="confirm-buttons">
+                    <button id="confirm-yes-btn">Confirm</button>
+                    <button id="confirm-no-btn" class="cancel-button">Cancel</button>
+                </div>
             </div>
         </div>
     </div>
