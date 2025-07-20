@@ -31,3 +31,9 @@ Technologies used in the project:
 *   Frontend: HTML5 CSS3 Vanilla JavaScript
 *   Backend & Database: Supabase (PostgreSQL)
 *   Hosting: Vercel
+
+<h2> ⚖️ License & Copyright </h2>
+
+© 2025 Dhruba Majumder. All Rights Reserved.
+
+This project is proprietary and closed source. You may view the code for educational purposes, but you are not permitted to copy, modify, distribute, or use any part of this code for your own projects without explicit written permission from the author.
