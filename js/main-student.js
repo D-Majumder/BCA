@@ -44,15 +44,18 @@ async function loadAnnouncements() {
         return;
     }
     announcementsDisplay.innerHTML = data.map(a => {
-        // Check if a link and text exist for the announcement
         const linkButton = (a.link_url && a.link_text)
             ? `<a href="${a.link_url}" target="_blank" class="action-btn student-login-btn" style="margin-top: 1rem; display: inline-flex;">${a.link_text}</a>`
             : '';
+        let formattedContent = a.content || '';
+        formattedContent = formattedContent.replace(/\*(.*?)\*/g, '<strong>$1</strong>');
+        formattedContent = formattedContent.replace(/_(.*?)_/g, '<em>$1</em>');
+        formattedContent = formattedContent.replace(/~(.*?)~/g, '<s>$1</s>');
 
         return `
         <div class="card" style="margin-bottom: 1rem; text-align: left;">
             <h4>${a.title}</h4>
-            <p>${a.content || ''}</p>
+            <p>${formattedContent}</p>
             ${linkButton}
             <small style="display: block; margin-top: 1rem;">Posted: ${new Date(a.created_at).toLocaleDateString('en-IN')}</small>
         </div>
