@@ -1,3 +1,4 @@
+import { customAlert } from './custom-modals.js';
 import { supabase } from './supabase-client.js';
 import { initializeTheme } from './theme.js';
 
@@ -29,6 +30,11 @@ async function loadBatches() {
 registerForm.addEventListener('submit', async (event) => {
     event.preventDefault();
     
+    // 1. Grab the button and set it to the "loading" state
+    const submitButton = registerForm.querySelector('button');
+    submitButton.disabled = true;
+    submitButton.textContent = 'Registering...';
+    
     // Get form values
     const fullName = document.getElementById('full-name').value;
     const universityRoll = document.getElementById('university-roll').value;
@@ -37,36 +43,46 @@ registerForm.addEventListener('submit', async (event) => {
     const password = document.getElementById('password').value;
 
     if (!batchId) {
-        alert("Please select your batch.");
+        customAlert("Please select your batch.");
+        // Reset button on error
+        submitButton.disabled = false;
+        submitButton.textContent = 'Register';
         return;
     }
 
-    // 1. Sign up the user in Supabase Auth
+    // 2. Sign up the user in Supabase Auth
     const { data: authData, error: authError } = await supabase.auth.signUp({
         email: email,
         password: password,
     });
 
     if (authError) {
-        alert('Registration failed: ' + authError.message);
+        customAlert('Registration failed: ' + authError.message);
+        // Reset button on error
+        submitButton.disabled = false;
+        submitButton.textContent = 'Register';
         return;
     }
 
     if (authData.user) {
-        // 2. If Auth signup is successful, insert into our 'profiles' table
+        // 3. If Auth signup is successful, insert into our 'profiles' table
         const { error: profileError } = await supabase
             .from('profiles')
             .insert({
-                id: authData.user.id, // The user's auth ID
+                id: authData.user.id,
                 full_name: fullName,
                 university_roll: universityRoll,
                 batch_id: batchId
             });
         
         if (profileError) {
-            alert('Could not create student profile: ' + profileError.message);
+            customAlert('Could not create student profile: ' + profileError.message);
+            // Reset button on error
+            submitButton.disabled = false;
+            submitButton.textContent = 'Register';
         } else {
-            alert('Registration successful! Please check your email to verify your account, then log in.');
+            customAlert('Registration successful! Please check your email to verify your account, then log in.');
+            // On success, we redirect, so no need to reset the button text.
             window.location.href = 'student-login.html';
         }
     }
