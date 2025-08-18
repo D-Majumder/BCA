@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Dashboard | BCA Smart Time Table</title>
+    <meta name="robots" content="noindex, nofollow">
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div class="wrapper">
+        <header class="header">
+            <div class="header-top">
+                <a href="index.html" style="text-decoration: none; color: inherit;"><h1>Smart Time Table</h1></a>
+                <div class="header-controls">
+                    <span id="theme-toggle"></span>
+                    <button id="logout-button">Logout</button>
+                </div>
+            </div>
+        </header>
+
+        <main class="dashboard-container">
+            <h2 id="welcome-message">Loading...</h2>
+            
+            <hr class="section-divider">
+            
+            <div class="management-section">
+                <h3>📊 My Attendance Summary</h3>
+                <div id="attendance-summary" class="item-list"><p>Calculating percentages...</p></div>
+            </div>
+
+            <hr class="section-divider">
+
+            <div class="management-section">
+                <h3>📌 Today's Classes</h3>
+                <div id="todays-classes" class="schedule-grid"><p>Loading today's schedule...</p></div>
+            </div>
+
+            <hr class="section-divider">
+            
+            </main>
+    </div>
+    <footer class="footer">
+        Made with <span class="heart">❤️</span> by Dhruba
+    </footer>
+    <script type="module" src="js/my-attendance.js"></script>
+</body>
+</html>

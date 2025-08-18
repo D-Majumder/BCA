@@ -90,6 +90,23 @@
                 </div>
             </div>
             <hr class="section-divider">
+            <hr class="section-divider">
+            <div class="management-section">
+                <h2>📅 Manage Holidays</h2>
+                <div class="card">
+                    <h3>Add a Holiday</h3>
+                    <form id="holiday-form">
+                        <label for="holiday-date">Date of Holiday</label>
+                        <input type="date" id="holiday-date" required>
+                        <label for="holiday-occasion">Occasion</label>
+                        <input type="text" id="holiday-occasion" placeholder="e.g., Independence Day" required>
+                        <button type="submit">Add Holiday</button>
+                    </form>
+                    <hr class="section-divider" style="margin: 1.5rem 0;">
+                    <h3>Existing Holidays</h3>
+                    <div class="item-list" id="holidays-list"><p>Loading...</p></div>
+                </div>
+            </div>
             <div class="management-section">
                 <h2>📢 Manage Announcements</h2>
                 <form id="announcement-form" class="card" style="text-align: left; max-width: none; margin-top: 1rem;">

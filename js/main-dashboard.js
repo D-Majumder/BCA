@@ -40,7 +40,8 @@ const editScheduleForm = document.getElementById('edit-schedule-form');
 const editScheduleIdInput = document.getElementById('edit-schedule-id');
 const editScheduleSubjectSelect = document.getElementById('edit-schedule-subject');
 const editScheduleTeacherSelect = document.getElementById('edit-schedule-teacher');
-
+const holidayForm = document.getElementById('holiday-form');
+const holidaysList = document.getElementById('holidays-list');
 
 // --- AUDIT LOGGING ---
 async function logAction(action, details = '') {
@@ -98,6 +99,37 @@ const fetchSubjects = () => fetchItems('subjects', subjectsList, renderSubject, 
 const fetchBatches = () => fetchItems('batches', batchesList, renderBatch, 'year_level');
 const fetchSyllabuses = () => fetchItems('syllabuses', syllabusesList, renderSyllabus, 'year_level');
 
+// --- HOLIDAY MANAGEMENT ---
+
+// Function to render a single holiday item
+const renderHoliday = holiday => {
+    const displayDate = new Date(holiday.holiday_date + 'T00:00:00').toLocaleDateString('en-IN', { year: 'numeric', month: 'long', day: 'numeric' });
+    return `<li>${holiday.occasion} (${displayDate}) <button class="delete-btn" data-id="${holiday.id}" data-table="holidays">✖</button></li>`;
+};
+
+// Function to fetch all holidays and display them
+async function fetchHolidays() {
+    await fetchItems('holidays', holidaysList, renderHoliday, 'holiday_date');
+}
+
+// Event listener for adding a new holiday
+holidayForm.addEventListener('submit', async e => {
+    e.preventDefault();
+    const holiday_date = document.getElementById('holiday-date').value;
+    const occasion = document.getElementById('holiday-occasion').value;
+
+    const { error } = await supabase.from('holidays').insert([{ holiday_date, occasion }]);
+
+    if (error) { 
+        customAlert("Error: " + error.message); 
+    } else {
+        logAction('Created Holiday', `${occasion} on ${holiday_date}`);
+        fetchAuditLogs();
+        holidayForm.reset();
+        fetchHolidays(); // Refresh the list
+    }
+});
+
 // --- EVENT DELEGATION FOR ALL CLICKS ---
 document.addEventListener('click', async function(event) {
     const target = event.target;
@@ -122,6 +154,7 @@ document.addEventListener('click', async function(event) {
                 if (table === 'time_slots') fetchSlots();
                 if (table === 'syllabuses') fetchSyllabuses();
                 if (table === 'schedules') renderSchedule(batchSelect.value);
+                if (table === 'holidays') fetchHolidays();
             }
         }
     }
@@ -473,6 +506,7 @@ document.addEventListener('DOMContentLoaded', () => {
     fetchSubjects();
     fetchBatches();
     fetchSyllabuses();
+    fetchHolidays();
     populateScheduleFormSelects();
     fetchAuditLogs();
     

@@ -3,3 +3,6 @@ Allow: /
 
 Disallow: /luchi.html
 Disallow: /alurdom.html
+Disallow: /register.html
+Disallow: /student-login.html
+Disallow: /my-attendance.html
