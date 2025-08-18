@@ -10,7 +10,7 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;700&display=swap" rel="stylesheet">
 </head>
-<body>
+<body id="auth-page">
     <div class="wrapper">
         <header class="header">
             <div class="header-top">
@@ -20,7 +20,7 @@
                 </div>
             </div>
         </header>
-        <div style="display: flex; align-items: center; justify-content: center; flex-grow: 1; padding: 20px;">
+        <div class="wrapper center">
             <div class="card">
                 <h2>Student Login</h2>
                 <form id="student-login-form">
@@ -33,12 +33,23 @@
                 <p style="text-align: center; margin-top: 1rem;">
                     Don't have an account? <a href="register.html">Register here</a>
                 </p>
+                <p style="text-align: center; margin-top: 1rem;">
+                    <a href="#" id="forgot-password-link">Forgot Password?</a>
+                </p>
             </div>
+        </div>
+    </div>
+    <div id="alert-modal" class="modal-overlay" style="display: none;">
+        <div class="modal-content card">
+            <h3>Notification</h3>
+            <p id="alert-message">Message goes here</p>
+            <button id="alert-ok-btn" style="margin-top: 1.5rem;">OK</button>
         </div>
     </div>
     <footer class="footer">
         Made with <span class="heart">❤️</span> by Dhruba
     </footer>
+    <script type="module" src="js/custom-modals.js"></script>
     <script type="module" src="js/student-login.js"></script>
 </body>
 </html>

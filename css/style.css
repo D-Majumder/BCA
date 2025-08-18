@@ -52,7 +52,15 @@ body.night-theme::before {
 
 /* --- Main Layout --- */
 .wrapper { flex: 1 0 auto; padding-bottom: 60px; z-index: 1; }
-.wrapper.center { display: flex; align-items: center; justify-content: center; padding: 20px; }
+.wrapper.center {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    flex-grow: 1;
+    width: 100%;
+    padding: 20px;
+}
 
 /* --- Header --- */
 .header { background: rgba(255, 255, 255, 0.1); backdrop-filter: blur(10px); padding: 1rem 5%; border-bottom: 1px solid rgba(255, 255, 255, 0.1); }
@@ -448,4 +456,24 @@ body.night-theme .shooting-star { display: block; position: fixed; width: 2px; h
     0% { transform: scale(1); opacity: 0.8; }
     50% { transform: scale(1.1); opacity: 1; }
     100% { transform: scale(1); opacity: 0.8; }
+}
+
+/* --- Authentication Page Specific Styles --- */
+
+#auth-page .card h2 {
+    text-align: left;
+}
+#auth-page .card p {
+    text-align: left;
+}
+#auth-page .card a {
+    color: #3498db; 
+    font-weight: 500;
+    text-decoration: none;
+}
+#auth-page .card a:hover {
+    text-decoration: underline;
+}
+.header-controls {
+    gap: 15px;
 }
