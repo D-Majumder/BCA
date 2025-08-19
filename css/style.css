@@ -440,7 +440,10 @@ body.night-theme .shooting-star { display: block; position: fixed; width: 2px; h
         padding-left: 0;
     }
     .header-controls {
-        gap: 10px;
+        display: flex;
+        align-items:center;
+        gap: 15px;
+
     }
 }
 
@@ -460,6 +463,10 @@ body.night-theme .shooting-star { display: block; position: fixed; width: 2px; h
 
 /* --- Authentication Page Specific Styles --- */
 
+#auth-page .card {
+    max-width: 420px;
+    width: 100%;
+}
 #auth-page .card h2 {
     text-align: left;
 }
@@ -475,5 +482,7 @@ body.night-theme .shooting-star { display: block; position: fixed; width: 2px; h
     text-decoration: underline;
 }
 .header-controls {
+    display: flex;
+    align-items: center;
     gap: 15px;
 }
