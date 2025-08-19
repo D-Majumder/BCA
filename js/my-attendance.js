@@ -1,6 +1,9 @@
 import { supabase } from './supabase-client.js';
 import { initializeTheme } from './theme.js';
 import { protectPage, handleLogout } from './auth.js';
+import { initializeLiveInfo } from './live-info.js';
+
+initializeLiveInfo();
 
 // --- DOM ELEMENTS ---
 const welcomeMessage = document.getElementById('welcome-message');

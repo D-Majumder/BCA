@@ -1,9 +1,11 @@
 import { customAlert } from './custom-modals.js';
 import { supabase } from './supabase-client.js';
 import { initializeTheme } from './theme.js';
+import { initializeLiveInfo } from './live-info.js';
 
 // Initialize the theme immediately
 initializeTheme();
+initializeLiveInfo();
 
 // Get the form element
 const loginForm = document.getElementById('student-login-form');

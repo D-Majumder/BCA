@@ -1,9 +1,11 @@
 import { customAlert } from './custom-modals.js';
 import { supabase } from './supabase-client.js';
 import { initializeTheme } from './theme.js';
+import { initializeLiveInfo } from './live-info.js';
 
 // Initialize the theme
 initializeTheme();
+initializeLiveInfo();
 
 // Get DOM elements
 const registerForm = document.getElementById('student-register-form');
